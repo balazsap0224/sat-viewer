@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+.env
+*.log
+.DS_Store
+
+# Built by the data job (SPEC.md 5): not committed, deployed with the site.
+packages/web/public/data/
+# The data job's download cache (raw responses, ETags)
+.data-cache/
+
+test-results/
+playwright-report/

@@ -1,0 +1,6 @@
+# Written by tools, not by hand: formatting them would be undone on the next run.
+pnpm-lock.yaml
+packages/web/public/data/
+.data-cache/
+packages/core/test/fixtures/
+packages/data-job/test/fixtures/

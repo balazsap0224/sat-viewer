@@ -1,0 +1,25 @@
+# Runs the same checks as `pnpm typecheck`, `pnpm lint` and `pnpm test` on every push and pull
+# request. (The scheduled data job and the deploy come in module 7.)
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm exec prettier --check .
+      - run: pnpm test
+      - run: pnpm --filter @sat-viewer/web build
