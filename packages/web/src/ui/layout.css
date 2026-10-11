@@ -347,3 +347,65 @@
   text-overflow: ellipsis;
   min-width: 0;
 }
+
+/* Passes */
+.passes-body {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.location-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.location-row > span {
+  flex: 1 1 100%;
+}
+
+.location-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.location-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.location-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.pass-list {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pass-row {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.pass-visible {
+  margin-left: 8px;
+  text-transform: none;
+}

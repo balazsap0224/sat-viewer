@@ -18,7 +18,7 @@ Status: ✅ done and verified · 🔎 built, waiting for owner verification · �
 | #   | Module                     | Status |
 | --- | -------------------------- | ------ |
 | 5   | Search, filters, info card | 🔎     |
-| 6   | Passes                     | ⬜     |
+| 6   | Passes                     | 🔎     |
 
 ## Phase 3: Publish
 

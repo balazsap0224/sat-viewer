@@ -54,6 +54,18 @@ three = (x, z, −y) of TEME, in Earth radii. The Earth mesh is rotated by θ ab
 - Orbit classes ([PROPOSED], `ORBIT_CLASS_RULES` in `derived.ts`), checked in order: **HEO** if e > 0.25; if the period is within 1 % of a sidereal day: **GEO** if i < 10°, otherwise **IGSO** (inclined geosynchronous: QZSS, BeiDou IGSO, NavIC, and old GEO satellites whose inclination has grown; seen from the ground they trace a figure 8 over a fixed longitude instead of standing still); **LEO** if apogee < 2,000 km; otherwise **MEO**.
 - Element age `(t − epoch)`; over 14 days is "stale" ([PROPOSED]).
 
+## Footprint, ground track (module 5)
+
+- Footprint half-angle λ = acos(R cos ε / (R + h)) − ε (Earth central angle from the sub-satellite point to the edge, minimum elevation ε; 0° by default). Spherical Earth of radius R = 6378.137 km for this only.
+- The footprint circle is drawn with the destination-point formula of spherical trigonometry.
+- Ground track: sub-satellite points (WGS-84 geodetic) from one period before to one period after the shown time (at most 2 days each way), drawn on the turning globe. Successive tracks shift west by (ω⊕ − Ω̇)·P, about 23.6° for the ISS.
+
+## Look angles and passes (module 6)
+
+- Topocentric horizon frame SEZ at the observer (Vallado Alg. 27): ρ = r_sat − r_obs in ECEF, rotated by the observer's geodetic latitude and longitude. Elevation = asin(ρZ / |ρ|), azimuth = atan2(ρE, −ρS) clockwise from north.
+- Pass: elevation above 10° [PROPOSED]. Found by 30 s steps; rise and set refined by bisection to 0.1 s; the highest point by golden-section search.
+- Earth shadow: cylinder of radius R behind the Earth (no penumbra). Sky dark enough: Sun elevation below −6°. Visible = both, sampled every 5 s during the pass. Brightness is not modelled.
+
 ## Failures
 
 SGP4 reports errors (eccentricity out of range, decayed, …). The data job leaves out objects that fail at build time and lists them in `meta.json` (`skipped`); the site also checks every position and hides an object the moment SGP4 fails for it.

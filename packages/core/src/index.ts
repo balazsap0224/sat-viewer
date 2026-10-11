@@ -8,3 +8,5 @@ export * from './time';
 export * from './vector';
 export * from './footprint';
 export * from './track';
+export * from './look';
+export * from './passes';

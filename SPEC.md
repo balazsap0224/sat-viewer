@@ -189,7 +189,7 @@ Generated data (not committed to git; built by the job and deployed with the sit
 - **Filters:** owner, orbit class, launch year range, constellation. A counter shows "N of M objects".
 - **Info card** (section 1, item 4), with links to the CelesTrak and Wikipedia pages where they exist.
 - **Time bar:** now / play / pause, speed (1x to 1,000x **[PROPOSED]**), slider ±7 days.
-- **My location:** browser geolocation or typed coordinates; next passes of the selected satellite with visibility.
+- **My location:** browser geolocation or typed coordinates (remembered in the visitor's browser only); next passes of the selected satellite with visibility (**[PROPOSED]** up to 8 passes in the 3 days after the shown time; clicking a pass jumps there and follows the satellite).
 - **About the data:** sources, licences, when the data was last refreshed, hidden objects.
 - The URL encodes the selected satellite and filters, so a link like `…/#sat=25544` can be shared.
 

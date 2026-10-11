@@ -44,3 +44,51 @@ Known limits:
 - Windows does not draw flag emoji, so owners are shown by name only.
 - Clicking empty space does not deselect (the × on the card does); a click would too often land between points while aiming.
 - The Wikipedia link is a search, so for generic names (e.g. "STARLINK-1007") it lands on a results page.
+
+## Module 6: passes (`packages/core/test/module6.test.ts`)
+
+### Reference values
+
+| Id  | Value                                                                                                                                                                             | Formula / working                                                                                                                                                                                                                                                                                                                              | Source                                 | ✓   |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | --- |
+| 6.1 | Observer at 0° N 0° E (sea level), satellite 1,000 km up, 10° of arc east along the equator: elevation 34.7231°, azimuth 90°, range 1,558.80 km                                   | r = 6378.137 + 1000 = 7378.137 km. Satellite ECEF = r(cos 10°, sin 10°, 0) = (7266.047, 1281.200, 0); observer = (6378.137, 0, 0); ρ = (887.910, 1281.200, 0). At φ = λ = 0: S = −ρz = 0, E = ρy = 1281.200, Z = ρx = 887.910. El = atan(887.910 / 1281.200) = 34.7231°; Az = atan2(E, −S) = 90°; range = √(887.910² + 1281.200²) = 1558.80 km | Vallado 4th ed., Alg. 27 (RAZEL)       |     |
+| 6.2 | The same 10° to the north, west, south: azimuth 0°, 270°, 180°                                                                                                                    | Only ρz or ρy changes sign; −S = ρz for north                                                                                                                                                                                                                                                                                                  | same                                   |     |
+| 6.3 | 500 km straight up above 45° N (along the ellipsoid normal): elevation 90°, range 500 km                                                                                          | ρ is parallel to the "up" axis Z of SEZ                                                                                                                                                                                                                                                                                                        | definition                             |     |
+| 6.4 | Shadow with the Sun along +x: (−7000, 0, 0) dark; (−7000, 6000, 0) dark; (−7000, 6400, 0) lit; (−7000, 0, 7000) lit; (7000, 0, 0) lit; GEO at local midnight (−42164, 0, 0) dark  | Night side (x < 0) and distance from the x axis below R = 6378.137 km means inside the cylinder: 6000 < R (dark), 6400 > R (lit)                                                                                                                                                                                                               | cylindrical shadow model (SPEC.md 6.4) |     |
+| 6.5 | Equinox 2026-03-20 12:00 UTC: Sun elevation > 89.5° at (0°, 1.9° E), ≈ 60° at (30° N, 1.9° E), ≈ 0° at (0°, 91.9° E)                                                              | The subsolar point is about (0°, 1.9° E) (module 1, test 1.7). Elevation = 90° − angular distance from it: 30° away gives 60°, 90° away gives 0°                                                                                                                                                                                               | module 1 reference values              |     |
+| 6.6 | ISS passes over Budapest (47.4979° N, 19.0402° E), 11–13 October 2026: same passes as a scan every 1 s; rise/set within 1.5 s, highest point within 0.01°; rise and set at 10.00° | The scan finds each crossing to its 1 s step; the search uses 30 s steps then bisection                                                                                                                                                                                                                                                        | brute force                            |     |
+| 6.7 | ASTRA 1KR (GEO, 19.0° E) from Budapest: up all the time, elevation ≈ 35.6°                                                                                                        | Satellite at nearly the observer's longitude: central angle γ ≈ 47.3° (geocentric latitude). tan El = (cos γ − R/r) / sin γ = (0.6782 − 0.1513) / 0.7349 = 0.717 → 35.6°. The test allows 34–36.5°                                                                                                                                             | geometry; SES's elevation tables       |     |
+
+Also tested: our look angles agree with satellite.js's `ecfToLookAngles` (an independent implementation of the same frame) to 1e-9 rad for random observers and satellites; a pass's visible part lies inside the pass; compass points; typed coordinates.
+
+### Compare with Heavens-Above (SPEC.md 6.5: within a minute)
+
+ISS passes over Budapest above 10°, from the elements of the live run (epoch 2026-10-11 04:14 UTC), Budapest time (CEST), as the site lists them:
+
+| Day        | Above 10°   | Direction | Highest | Visible     | Heavens-Above ✓ |
+| ---------- | ----------- | --------- | ------- | ----------- | --------------- |
+| Mon 12 Oct | 07:12–07:18 | S → E     | 23°     |             |                 |
+| Mon 12 Oct | 08:48–08:55 | W → NE    | 78°     |             |                 |
+| Mon 12 Oct | 10:25–10:32 | W → E     | 39°     |             |                 |
+| Mon 12 Oct | 12:02–12:09 | NW → E    | 59°     |             |                 |
+| Mon 12 Oct | 13:39–13:46 | W → SE    | 33°     |             |                 |
+| Tue 13 Oct | 06:26–06:30 | S → E     | 15°     | 06:26–06:28 |                 |
+| Tue 13 Oct | 08:01–08:08 | SW → NE   | 77°     |             |                 |
+| Tue 13 Oct | 09:38–09:44 | W → NE    | 42°     |             |                 |
+
+**How to compare:** Heavens-Above → ISS → "All passes" (not just visible ones) for Budapest. Heavens-Above lists passes from 0° or 10° depending on settings, and uses newer elements, so expect times within a minute; the "Visible" pass on Tuesday morning should appear among its visible passes. After the next `pnpm data` run the site uses newer elements, so compare what the site shows at that moment.
+
+### What Claude checked in a real browser (Edge, time zone Europe/Budapest)
+
+| Check                            | Result                                                                    | ✓   |
+| -------------------------------- | ------------------------------------------------------------------------- | --- |
+| Typing 47.4979, 19.0402 and Save | Location shown, red dot on the globe at Budapest, remembered after reload |     |
+| ISS selected                     | The 8 passes above, times in Europe/Budapest                              |     |
+| Clicking a pass                  | Time jumps to 30 s before the rise, the camera follows the ISS            |     |
+| ASTRA 1KR (GEO) selected         | "Always above 10° here: S, about 36° high." (no rise, set or visibility)  |     |
+
+Known limits:
+
+- No brightness (magnitude) model: "Visible" means sunlit in a dark sky; faint satellites are marked too.
+- Passes shorter than 30 s above 10° can be missed (very low grazes).
+- "Use my location" needs the browser's permission; on `http://` other than localhost browsers refuse it (the hosted site will be https).

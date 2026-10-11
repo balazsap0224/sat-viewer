@@ -5,6 +5,7 @@ import { type SatData, useSatData } from './data/load';
 import { satrecFromRow } from './data/elements';
 import { CameraRig } from './scene/CameraRig';
 import { Earth } from './scene/Earth';
+import { ObserverMarker } from './scene/ObserverMarker';
 import { Picker } from './scene/Picker';
 import { ORBIT_CLASS_COLORS, SatellitePoints } from './scene/SatellitePoints';
 import { SelectedSat } from './scene/SelectedSat';
@@ -17,6 +18,7 @@ import { AboutDialog } from './ui/AboutDialog';
 import { FiltersPanel } from './ui/FiltersPanel';
 import { HoverTip } from './ui/HoverTip';
 import { InfoCard } from './ui/InfoCard';
+import { PassesPanel } from './ui/PassesPanel';
 import { SearchBox } from './ui/SearchBox';
 import { StatusCorner } from './ui/StatusCorner';
 import { TimeBar } from './ui/TimeBar';
@@ -79,6 +81,7 @@ export function App() {
             color={ORBIT_CLASS_COLORS[sel.cls]}
           />
         )}
+        <ObserverMarker />
         <Stars radius={300} depth={50} count={4000} factor={4} fade />
         <Sun />
         {/*
@@ -102,6 +105,9 @@ export function App() {
         </header>
         {data && <SearchBox data={data} />}
         {data && <FiltersPanel data={data} shown={shown} />}
+        {data && (
+          <PassesPanel key={sel?.row[0] ?? 'none'} satrec={sel?.satrec} name={sel?.entry?.name} />
+        )}
       </div>
 
       {state.status === 'loading' && <div className="pane notice">Loading satellite data…</div>}
