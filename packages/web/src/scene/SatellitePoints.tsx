@@ -24,6 +24,7 @@ export const ORBIT_CLASS_COLORS: Record<OrbitClass, string> = {
   LEO: '#7cc4ff',
   MEO: '#45d69b',
   GEO: '#ffc857',
+  IGSO: '#ff9f43',
   HEO: '#ff8fb1',
 };
 

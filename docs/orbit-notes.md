@@ -51,7 +51,7 @@ three = (x, z, −y) of TEME, in Earth radii. The Earth mesh is rotated by θ ab
 - Period `P = 1440 / n` min (n in rev/day).
 - Semi-major axis `a = (μ / n²)^(1/3)` with n in rad/s. This is a two-body "Kozai" value; SGP4's internal (Brouwer) mean axis differs by up to ~10 km in LEO. Good enough for the info card and classes, never used for positions.
 - Perigee / apogee altitude `a(1 ∓ e) − R` (above the equatorial radius, as SATCAT gives them).
-- Orbit classes ([PROPOSED], `ORBIT_CLASS_RULES` in `derived.ts`), checked in order: **HEO** if e > 0.25; **GEO** if the period is within 1 % of a sidereal day and i < 10°; **LEO** if apogee < 2,000 km; otherwise **MEO**. Note: inclined geosynchronous orbits (QZSS, BeiDou IGSO, i ≈ 40–55°) come out as MEO under these rules; see the open question in `docs/verification/phase-1.md`.
+- Orbit classes ([PROPOSED], `ORBIT_CLASS_RULES` in `derived.ts`), checked in order: **HEO** if e > 0.25; if the period is within 1 % of a sidereal day: **GEO** if i < 10°, otherwise **IGSO** (inclined geosynchronous: QZSS, BeiDou IGSO, NavIC, and old GEO satellites whose inclination has grown; seen from the ground they trace a figure 8 over a fixed longitude instead of standing still); **LEO** if apogee < 2,000 km; otherwise **MEO**.
 - Element age `(t − epoch)`; over 14 days is "stale" ([PROPOSED]).
 
 ## Failures

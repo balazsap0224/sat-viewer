@@ -155,7 +155,7 @@ Generated data (not committed to git; built by the job and deployed with the sit
 
 - Period from mean motion `n` (rev/day): `P = 1440 / n` minutes.
 - Semi-major axis from `n` in rad/s: `a = (MU / n²)^(1/3)`; perigee and apogee altitude `a(1 − e) − R`, `a(1 + e) − R`.
-- Orbit class **[PROPOSED]**: LEO (apogee < 2,000 km), MEO, GEO (period within 1% of a sidereal day and `i` < 10°), HEO (`e` > 0.25), compared with SATCAT's own values.
+- Orbit class **[PROPOSED]**: LEO (apogee < 2,000 km), MEO, GEO (period within 1% of a sidereal day and `i` < 10°), IGSO (inclined geosynchronous: period within 1% of a sidereal day and `i` ≥ 10°; owner's choice, 2026-10-11), HEO (`e` > 0.25, checked first), compared with SATCAT's own values.
 
 ### 6.4 Passes over an observer
 

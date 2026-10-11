@@ -10,6 +10,7 @@ const CLASS_NAMES: Record<OrbitClass, string> = {
   LEO: 'Low Earth orbit',
   MEO: 'Medium Earth orbit',
   GEO: 'Geostationary',
+  IGSO: 'Inclined geosynchronous',
   HEO: 'Highly elliptical',
 };
 

@@ -1,5 +1,5 @@
 // Module 1 reference values: time, Earth rotation (GMST), Sun direction.
-// PENDING OWNER VERIFICATION, see docs/verification/phase-1.md, section "Module 1".
+// Verified by the owner on 2026-10-11, see docs/verification/phase-1.md, section "Module 1".
 
 import fc from 'fast-check';
 import { gstime } from 'satellite.js';

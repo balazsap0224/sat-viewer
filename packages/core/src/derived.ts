@@ -32,15 +32,15 @@ export function apsidesKm(
   };
 }
 
-export type OrbitClass = 'LEO' | 'MEO' | 'GEO' | 'HEO';
+export type OrbitClass = 'LEO' | 'MEO' | 'GEO' | 'IGSO' | 'HEO';
 
 /** Thresholds for the orbit classes (SPEC.md 6.3, [PROPOSED]: easy to change here). */
 export const ORBIT_CLASS_RULES = {
   /** LEO: apogee below this altitude [km] */
   leoMaxApogeeKm: 2000,
-  /** GEO: period within this fraction of a sidereal day… */
+  /** GEO and IGSO (geosynchronous): period within this fraction of a sidereal day… */
   geoPeriodTolerance: 0.01,
-  /** …and inclination below this [deg] */
+  /** …and inclination below this [deg] for GEO; at or above it, IGSO */
   geoMaxInclinationDeg: 10,
   /** HEO: eccentricity above this */
   heoMinEccentricity: 0.25,
@@ -48,8 +48,10 @@ export const ORBIT_CLASS_RULES = {
 
 /**
  * Orbit class (SPEC.md 6.3). Checked in this order: HEO (very elliptical: Molniya, Tundra,
- * GTO, science orbits), GEO (period ≈ one sidereal day, near-equatorial), LEO (whole orbit
- * below 2,000 km), otherwise MEO (navigation satellites, O3b, inclined geosynchronous).
+ * GTO, science orbits); geosynchronous (period ≈ one sidereal day), split into GEO
+ * (near-equatorial, appears fixed in the sky) and IGSO (inclined: QZSS, BeiDou IGSO, old GEO
+ * satellites that have drifted to a higher inclination; traces a figure 8 over one longitude);
+ * LEO (whole orbit below 2,000 km); otherwise MEO (navigation satellites, O3b).
  */
 export function orbitClass(
   meanMotionRevPerDay: number,
@@ -59,11 +61,8 @@ export function orbitClass(
   const R = ORBIT_CLASS_RULES;
   if (eccentricity > R.heoMinEccentricity) return 'HEO';
   const periodS = periodMinutes(meanMotionRevPerDay) * 60;
-  if (
-    Math.abs(periodS / SIDEREAL_DAY_S - 1) < R.geoPeriodTolerance &&
-    inclinationDeg < R.geoMaxInclinationDeg
-  ) {
-    return 'GEO';
+  if (Math.abs(periodS / SIDEREAL_DAY_S - 1) < R.geoPeriodTolerance) {
+    return inclinationDeg < R.geoMaxInclinationDeg ? 'GEO' : 'IGSO';
   }
   if (apsidesKm(meanMotionRevPerDay, eccentricity).apogeeKm < R.leoMaxApogeeKm) return 'LEO';
   return 'MEO';

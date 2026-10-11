@@ -1,5 +1,6 @@
 // Module 3 reference values: SGP4 wrapper on OMM elements, TEME → ECEF → WGS-84 geodetic,
-// derived values, orbit classes. PENDING OWNER VERIFICATION, see
+// derived values, orbit classes. Verified by the owner on 2026-10-11, except the IGSO cases
+// added to [3.13] afterwards, which are PENDING OWNER VERIFICATION; see
 // docs/verification/phase-1.md, section "Module 3". (The official SGP4 cases are in
 // sgp4Verification.test.ts.)
 
@@ -193,14 +194,19 @@ describe('derived values (SPEC.md 6.3)', () => {
     expect(semiMajorAxisKm(ASTRA_1KR.MEAN_MOTION)).toBeCloseTo(42164.2, 0);
   });
 
-  it('[3.13] orbit classes: ISS LEO, GPS MEO, ASTRA 1KR GEO, Meridian 7 (e = 0.66) HEO', () => {
+  it('[3.13] orbit classes: ISS LEO, GPS MEO, ASTRA 1KR GEO, Meridian 7 (e = 0.66) HEO, inclined geosynchronous IGSO', () => {
     expect(orbitClass(ISS.MEAN_MOTION, ISS.ECCENTRICITY, ISS.INCLINATION)).toBe('LEO');
     expect(orbitClass(2.00562244, 0.00291257, 55.1109)).toBe('MEO');
     expect(orbitClass(ASTRA_1KR.MEAN_MOTION, ASTRA_1KR.ECCENTRICITY, ASTRA_1KR.INCLINATION)).toBe(
       'GEO',
     );
     expect(orbitClass(2.00606307, 0.66091195, 62.8)).toBe('HEO');
-    // Geosynchronous but inclined 25° (e.g. a QZSS or BeiDou IGSO): not GEO, so MEO
-    expect(orbitClass(1.0027, 0.075, 40)).toBe('MEO');
+    // Geosynchronous but inclined 40° (like QZSS or a BeiDou IGSO): IGSO
+    expect(orbitClass(1.0027, 0.075, 40)).toBe('IGSO');
+    // Inclination exactly at the 10° boundary counts as IGSO; just below it, GEO
+    expect(orbitClass(1.0027, 0.0003, 10)).toBe('IGSO');
+    expect(orbitClass(1.0027, 0.0003, 9.99)).toBe('GEO');
+    // Tundra-like (geosynchronous, e = 0.27 > 0.25): HEO comes first
+    expect(orbitClass(1.0027, 0.27, 63.4)).toBe('HEO');
   });
 });

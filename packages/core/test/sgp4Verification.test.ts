@@ -7,8 +7,8 @@
 //   java_sgp4_ver.out    Java reference (used for case 23599, see below)
 //
 // This checks that satellite.js is used correctly: time argument, units, frame.
-// PENDING OWNER VERIFICATION (the hand-checked values are in docs/verification/phase-1.md,
-// module 3).
+// Verified by the owner on 2026-10-11 (the hand-checked values are in
+// docs/verification/phase-1.md, module 3).
 //
 // Three things about the reference files, found while writing this test (2026-10-11):
 // 1. Case 23599 (ARIANE 42P+3 R/B) is in the set *because* implementations differ there: its
