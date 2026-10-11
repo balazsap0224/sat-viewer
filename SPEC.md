@@ -101,7 +101,7 @@ Owner codes (`US`, `PRC`, `CIS`, `ESA`, `ITSO`…) are translated to readable na
 - GitHub disables scheduled workflows in a public repo after 60 days without commits. The About page shows the data age, and the job's failure email tells the owner; re-enable the workflow if that happens.
 - Every request sends a `User-Agent` naming the project and a contact address.
 - The job keeps the last good files. On any HTTP error it **stops, keeps the old data, and fails the workflow run** (so the owner gets an email). It never retries in a loop.
-- Sanity checks before publishing: object count within ±10% of the previous run, every record passes the zod schema, no epoch in the future.
+- Sanity checks before publishing: object count within ±10% of the previous run, every record passes the zod schema, no epoch more than 3 days in the future (some high orbits are fitted with an epoch up to about a day ahead; docs/decisions.md).
 
 ### 4.4 Attribution
 

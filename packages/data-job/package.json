@@ -1,0 +1,22 @@
+{
+  "name": "@sat-viewer/data-job",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx src/main.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@sat-viewer/core": "workspace:*",
+    "@sat-viewer/shared": "workspace:*",
+    "tsx": "^4.23.15",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.3"
+  }
+}

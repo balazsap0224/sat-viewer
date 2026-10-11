@@ -1,0 +1,677 @@
+{
+  "AB": {
+    "name": "Arab Satellite Communications Organization (Arabsat)",
+    "country": "SA",
+    "kind": "organisation"
+  },
+  "ABS": {
+    "name": "Asia Broadcast Satellite",
+    "country": "HK",
+    "kind": "organisation"
+  },
+  "AC": {
+    "name": "Asia Satellite Telecommunications Company (AsiaSat)",
+    "country": "HK",
+    "kind": "organisation"
+  },
+  "ALG": {
+    "name": "Algeria",
+    "country": "DZ",
+    "kind": "country"
+  },
+  "ANG": {
+    "name": "Angola",
+    "country": "AO",
+    "kind": "country"
+  },
+  "ARGN": {
+    "name": "Argentina",
+    "country": "AR",
+    "kind": "country"
+  },
+  "ARM": {
+    "name": "Armenia",
+    "country": "AM",
+    "kind": "country"
+  },
+  "ASRA": {
+    "name": "Austria",
+    "country": "AT",
+    "kind": "country"
+  },
+  "AUS": {
+    "name": "Australia",
+    "country": "AU",
+    "kind": "country"
+  },
+  "AZER": {
+    "name": "Azerbaijan",
+    "country": "AZ",
+    "kind": "country"
+  },
+  "BEL": {
+    "name": "Belgium",
+    "country": "BE",
+    "kind": "country"
+  },
+  "BELA": {
+    "name": "Belarus",
+    "country": "BY",
+    "kind": "country"
+  },
+  "BERM": {
+    "name": "Bermuda",
+    "country": "BM",
+    "kind": "country"
+  },
+  "BGD": {
+    "name": "Bangladesh",
+    "country": "BD",
+    "kind": "country"
+  },
+  "BHR": {
+    "name": "Bahrain",
+    "country": "BH",
+    "kind": "country"
+  },
+  "BHUT": {
+    "name": "Bhutan",
+    "country": "BT",
+    "kind": "country"
+  },
+  "BOL": {
+    "name": "Bolivia",
+    "country": "BO",
+    "kind": "country"
+  },
+  "BRAZ": {
+    "name": "Brazil",
+    "country": "BR",
+    "kind": "country"
+  },
+  "BUL": {
+    "name": "Bulgaria",
+    "country": "BG",
+    "kind": "country"
+  },
+  "BWA": {
+    "name": "Botswana",
+    "country": "BW",
+    "kind": "country"
+  },
+  "CA": {
+    "name": "Canada",
+    "country": "CA",
+    "kind": "country"
+  },
+  "CHBZ": {
+    "name": "China / Brazil",
+    "country": null,
+    "kind": "multinational"
+  },
+  "CHLE": {
+    "name": "Chile",
+    "country": "CL",
+    "kind": "country"
+  },
+  "CHTU": {
+    "name": "China / Türkiye",
+    "country": null,
+    "kind": "multinational"
+  },
+  "CIS": {
+    "name": "Russia (CIS, former USSR)",
+    "country": "RU",
+    "kind": "country"
+  },
+  "COL": {
+    "name": "Colombia",
+    "country": "CO",
+    "kind": "country"
+  },
+  "CRI": {
+    "name": "Costa Rica",
+    "country": "CR",
+    "kind": "country"
+  },
+  "CZCH": {
+    "name": "Czech Republic",
+    "country": "CZ",
+    "kind": "country"
+  },
+  "DEN": {
+    "name": "Denmark",
+    "country": "DK",
+    "kind": "country"
+  },
+  "DJI": {
+    "name": "Djibouti",
+    "country": "DJ",
+    "kind": "country"
+  },
+  "ECU": {
+    "name": "Ecuador",
+    "country": "EC",
+    "kind": "country"
+  },
+  "EGYP": {
+    "name": "Egypt",
+    "country": "EG",
+    "kind": "country"
+  },
+  "ESA": {
+    "name": "European Space Agency",
+    "country": "EU",
+    "kind": "organisation"
+  },
+  "ESRO": {
+    "name": "European Space Research Organization",
+    "country": "EU",
+    "kind": "organisation"
+  },
+  "EST": {
+    "name": "Estonia",
+    "country": "EE",
+    "kind": "country"
+  },
+  "ETH": {
+    "name": "Ethiopia",
+    "country": "ET",
+    "kind": "country"
+  },
+  "EUME": {
+    "name": "EUMETSAT",
+    "country": "EU",
+    "kind": "organisation"
+  },
+  "EUTE": {
+    "name": "Eutelsat",
+    "country": "EU",
+    "kind": "organisation"
+  },
+  "FGER": {
+    "name": "France / Germany",
+    "country": null,
+    "kind": "multinational"
+  },
+  "FIN": {
+    "name": "Finland",
+    "country": "FI",
+    "kind": "country"
+  },
+  "FR": {
+    "name": "France",
+    "country": "FR",
+    "kind": "country"
+  },
+  "FRIT": {
+    "name": "France / Italy",
+    "country": null,
+    "kind": "multinational"
+  },
+  "GER": {
+    "name": "Germany",
+    "country": "DE",
+    "kind": "country"
+  },
+  "GHA": {
+    "name": "Ghana",
+    "country": "GH",
+    "kind": "country"
+  },
+  "GLOB": {
+    "name": "Globalstar",
+    "country": "US",
+    "kind": "organisation"
+  },
+  "GREC": {
+    "name": "Greece",
+    "country": "GR",
+    "kind": "country"
+  },
+  "GRSA": {
+    "name": "Greece / Saudi Arabia",
+    "country": null,
+    "kind": "multinational"
+  },
+  "GUAT": {
+    "name": "Guatemala",
+    "country": "GT",
+    "kind": "country"
+  },
+  "HRV": {
+    "name": "Croatia",
+    "country": "HR",
+    "kind": "country"
+  },
+  "HUN": {
+    "name": "Hungary",
+    "country": "HU",
+    "kind": "country"
+  },
+  "IM": {
+    "name": "Inmarsat",
+    "country": "GB",
+    "kind": "organisation"
+  },
+  "IND": {
+    "name": "India",
+    "country": "IN",
+    "kind": "country"
+  },
+  "INDO": {
+    "name": "Indonesia",
+    "country": "ID",
+    "kind": "country"
+  },
+  "IRAN": {
+    "name": "Iran",
+    "country": "IR",
+    "kind": "country"
+  },
+  "IRAQ": {
+    "name": "Iraq",
+    "country": "IQ",
+    "kind": "country"
+  },
+  "IRID": {
+    "name": "Iridium",
+    "country": "US",
+    "kind": "organisation"
+  },
+  "IRL": {
+    "name": "Ireland",
+    "country": "IE",
+    "kind": "country"
+  },
+  "ISRA": {
+    "name": "Israel",
+    "country": "IL",
+    "kind": "country"
+  },
+  "ISRO": {
+    "name": "Indian Space Research Organisation",
+    "country": "IN",
+    "kind": "organisation"
+  },
+  "ISS": {
+    "name": "International Space Station",
+    "country": null,
+    "kind": "multinational"
+  },
+  "IT": {
+    "name": "Italy",
+    "country": "IT",
+    "kind": "country"
+  },
+  "ITSO": {
+    "name": "Intelsat",
+    "country": "US",
+    "kind": "organisation"
+  },
+  "JOR": {
+    "name": "Jordan",
+    "country": "JO",
+    "kind": "country"
+  },
+  "JPN": {
+    "name": "Japan",
+    "country": "JP",
+    "kind": "country"
+  },
+  "KAZ": {
+    "name": "Kazakhstan",
+    "country": "KZ",
+    "kind": "country"
+  },
+  "KEN": {
+    "name": "Kenya",
+    "country": "KE",
+    "kind": "country"
+  },
+  "KWT": {
+    "name": "Kuwait",
+    "country": "KW",
+    "kind": "country"
+  },
+  "LAOS": {
+    "name": "Laos",
+    "country": "LA",
+    "kind": "country"
+  },
+  "LKA": {
+    "name": "Sri Lanka",
+    "country": "LK",
+    "kind": "country"
+  },
+  "LTU": {
+    "name": "Lithuania",
+    "country": "LT",
+    "kind": "country"
+  },
+  "LUXE": {
+    "name": "Luxembourg",
+    "country": "LU",
+    "kind": "country"
+  },
+  "MA": {
+    "name": "Morocco",
+    "country": "MA",
+    "kind": "country"
+  },
+  "MALA": {
+    "name": "Malaysia",
+    "country": "MY",
+    "kind": "country"
+  },
+  "MCO": {
+    "name": "Monaco",
+    "country": "MC",
+    "kind": "country"
+  },
+  "MDA": {
+    "name": "Moldova",
+    "country": "MD",
+    "kind": "country"
+  },
+  "MEX": {
+    "name": "Mexico",
+    "country": "MX",
+    "kind": "country"
+  },
+  "MMR": {
+    "name": "Myanmar",
+    "country": "MM",
+    "kind": "country"
+  },
+  "MNE": {
+    "name": "Montenegro",
+    "country": "ME",
+    "kind": "country"
+  },
+  "MNG": {
+    "name": "Mongolia",
+    "country": "MN",
+    "kind": "country"
+  },
+  "MUS": {
+    "name": "Mauritius",
+    "country": "MU",
+    "kind": "country"
+  },
+  "NATO": {
+    "name": "NATO",
+    "country": null,
+    "kind": "organisation"
+  },
+  "NETH": {
+    "name": "Netherlands",
+    "country": "NL",
+    "kind": "country"
+  },
+  "NICO": {
+    "name": "New ICO",
+    "country": "GB",
+    "kind": "organisation"
+  },
+  "NIG": {
+    "name": "Nigeria",
+    "country": "NG",
+    "kind": "country"
+  },
+  "NKOR": {
+    "name": "North Korea",
+    "country": "KP",
+    "kind": "country"
+  },
+  "NOR": {
+    "name": "Norway",
+    "country": "NO",
+    "kind": "country"
+  },
+  "NPL": {
+    "name": "Nepal",
+    "country": "NP",
+    "kind": "country"
+  },
+  "NZ": {
+    "name": "New Zealand",
+    "country": "NZ",
+    "kind": "country"
+  },
+  "O3B": {
+    "name": "O3b Networks (SES)",
+    "country": "LU",
+    "kind": "organisation"
+  },
+  "ORB": {
+    "name": "ORBCOMM",
+    "country": "US",
+    "kind": "organisation"
+  },
+  "PAKI": {
+    "name": "Pakistan",
+    "country": "PK",
+    "kind": "country"
+  },
+  "PERU": {
+    "name": "Peru",
+    "country": "PE",
+    "kind": "country"
+  },
+  "POL": {
+    "name": "Poland",
+    "country": "PL",
+    "kind": "country"
+  },
+  "POR": {
+    "name": "Portugal",
+    "country": "PT",
+    "kind": "country"
+  },
+  "PRC": {
+    "name": "China",
+    "country": "CN",
+    "kind": "country"
+  },
+  "PRES": {
+    "name": "China / European Space Agency",
+    "country": null,
+    "kind": "multinational"
+  },
+  "PRY": {
+    "name": "Paraguay",
+    "country": "PY",
+    "kind": "country"
+  },
+  "QAT": {
+    "name": "Qatar",
+    "country": "QA",
+    "kind": "country"
+  },
+  "RASC": {
+    "name": "RascomStar-QAF",
+    "country": null,
+    "kind": "organisation"
+  },
+  "ROC": {
+    "name": "Taiwan",
+    "country": "TW",
+    "kind": "country"
+  },
+  "ROM": {
+    "name": "Romania",
+    "country": "RO",
+    "kind": "country"
+  },
+  "RP": {
+    "name": "Philippines",
+    "country": "PH",
+    "kind": "country"
+  },
+  "RWA": {
+    "name": "Rwanda",
+    "country": "RW",
+    "kind": "country"
+  },
+  "SAFR": {
+    "name": "South Africa",
+    "country": "ZA",
+    "kind": "country"
+  },
+  "SAUD": {
+    "name": "Saudi Arabia",
+    "country": "SA",
+    "kind": "country"
+  },
+  "SDN": {
+    "name": "Sudan",
+    "country": "SD",
+    "kind": "country"
+  },
+  "SEAL": {
+    "name": "Sea Launch",
+    "country": null,
+    "kind": "organisation"
+  },
+  "SEN": {
+    "name": "Senegal",
+    "country": "SN",
+    "kind": "country"
+  },
+  "SES": {
+    "name": "SES",
+    "country": "LU",
+    "kind": "organisation"
+  },
+  "SGJP": {
+    "name": "Singapore / Japan",
+    "country": null,
+    "kind": "multinational"
+  },
+  "SING": {
+    "name": "Singapore",
+    "country": "SG",
+    "kind": "country"
+  },
+  "SKOR": {
+    "name": "South Korea",
+    "country": "KR",
+    "kind": "country"
+  },
+  "SLB": {
+    "name": "Solomon Islands",
+    "country": "SB",
+    "kind": "country"
+  },
+  "SPN": {
+    "name": "Spain",
+    "country": "ES",
+    "kind": "country"
+  },
+  "STCT": {
+    "name": "Singapore / Taiwan",
+    "country": null,
+    "kind": "multinational"
+  },
+  "SVK": {
+    "name": "Slovakia",
+    "country": "SK",
+    "kind": "country"
+  },
+  "SVN": {
+    "name": "Slovenia",
+    "country": "SI",
+    "kind": "country"
+  },
+  "SWED": {
+    "name": "Sweden",
+    "country": "SE",
+    "kind": "country"
+  },
+  "SWTZ": {
+    "name": "Switzerland",
+    "country": "CH",
+    "kind": "country"
+  },
+  "TBD": {
+    "name": "To be determined",
+    "country": null,
+    "kind": "unknown"
+  },
+  "THAI": {
+    "name": "Thailand",
+    "country": "TH",
+    "kind": "country"
+  },
+  "TMMC": {
+    "name": "Turkmenistan / Monaco",
+    "country": null,
+    "kind": "multinational"
+  },
+  "TUN": {
+    "name": "Tunisia",
+    "country": "TN",
+    "kind": "country"
+  },
+  "TURK": {
+    "name": "Türkiye",
+    "country": "TR",
+    "kind": "country"
+  },
+  "UAE": {
+    "name": "United Arab Emirates",
+    "country": "AE",
+    "kind": "country"
+  },
+  "UK": {
+    "name": "United Kingdom",
+    "country": "GB",
+    "kind": "country"
+  },
+  "UKR": {
+    "name": "Ukraine",
+    "country": "UA",
+    "kind": "country"
+  },
+  "UNK": {
+    "name": "Unknown",
+    "country": null,
+    "kind": "unknown"
+  },
+  "URY": {
+    "name": "Uruguay",
+    "country": "UY",
+    "kind": "country"
+  },
+  "US": {
+    "name": "United States",
+    "country": "US",
+    "kind": "country"
+  },
+  "USBZ": {
+    "name": "United States / Brazil",
+    "country": null,
+    "kind": "multinational"
+  },
+  "VAT": {
+    "name": "Vatican City",
+    "country": "VA",
+    "kind": "country"
+  },
+  "VENZ": {
+    "name": "Venezuela",
+    "country": "VE",
+    "kind": "country"
+  },
+  "VTNM": {
+    "name": "Vietnam",
+    "country": "VN",
+    "kind": "country"
+  },
+  "ZWE": {
+    "name": "Zimbabwe",
+    "country": "ZW",
+    "kind": "country"
+  }
+}

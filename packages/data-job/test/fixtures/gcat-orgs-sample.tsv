@@ -1,0 +1,8 @@
+#Code	UCode	StateCode	Type	Class	TStart	TStop	ShortName	Name	Location	Longitude	Latitude	Error	Parent	ShortEName	EName	UName
+# Updated 2026 Oct  9 1759:22
+DKJ	DKJ	CN	O/PL	B	2002	-	CETG	Zhongguo dianzi keji jituan YG	Beijing:Haidian	    116.3000 	   39.9600 	0.0200 	-	-	China Electronics Technology Group Co. Ltd.	中国电子科技集团有限公司
+JSC	JSC	US	O/LA/PL/S	C	1973 Feb 17	-	NASA JSC	NASA Johnson Space Flight Center	Houston:Clear Lake, Texas	    -95.1200 	   29.5600 	0.0200 	NASA	-	-	NASA Johnson Space Flight Center
+KHRR	KHRU	RU	O/LA/LV/PL	C	1998	2014 Mar	Khrunichev	GKNPTs im. M.V. Khrunichev, Roskosmos	Moskva:Fili	     37.5000 	   55.7500 	0.0200 	-	-	Khrunichev State Research and Production Center	Государственный космический научно-производственный центр имени М.В.Хруничева
+LMSSD	MARTD	US	LA/LV/PL	B	2003	-	LMSS Denver	Lockheed Martin Space Systems (Denver), Astronautics Operations	Denver:Littleton, Colorado	   -105.0100 	   39.6000 	0.0200 	LM	-	-	Lockheed Martin Space Systems (Denver), Astronautics Operations
+SMC	AFWDD	US	O/LA/PL	D	2019 Dec 20	2021 Aug	USSF SMC	US Space Force Space and Missile Center	El Segundo, California	   -118.4100 	   33.9200 	0.0200 	USSF	-	-	US Space Force Space and Missile Center
+SPXS	SPXS	US	O/PL	B	2015 Jun	-	SpaceX/Seattle	SpaceX (Seattle)	Seattle:Redmond, Washington	   -122.1200 	   47.6700 	0.0200 	-	-	-	SpaceX (Seattle)

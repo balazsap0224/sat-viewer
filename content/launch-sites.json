@@ -1,0 +1,212 @@
+{
+  "AFETR": {
+    "name": "Cape Canaveral / Kennedy Space Center, Florida, USA",
+    "latDeg": 28.49,
+    "lonDeg": -80.58
+  },
+  "AFWTR": {
+    "name": "Vandenberg Space Force Base, California, USA",
+    "latDeg": 34.74,
+    "lonDeg": -120.57
+  },
+  "ANDSP": {
+    "name": "Andøya Spaceport, Norway",
+    "latDeg": 69.29,
+    "lonDeg": 16.02
+  },
+  "ALCLC": {
+    "name": "Alcântara Launch Center, Brazil",
+    "latDeg": -2.32,
+    "lonDeg": -44.37
+  },
+  "BOS": {
+    "name": "Bowen Orbital Spaceport, Queensland, Australia",
+    "latDeg": -19.96,
+    "lonDeg": 148.11
+  },
+  "CAS": {
+    "name": "Canary Islands airspace (air launch)",
+    "latDeg": 28,
+    "lonDeg": -15
+  },
+  "DLS": {
+    "name": "Dombarovsky (Yasny), Russia",
+    "latDeg": 51.21,
+    "lonDeg": 59.85
+  },
+  "ERAS": {
+    "name": "Eastern Range airspace (air launch), USA",
+    "latDeg": 28.5,
+    "lonDeg": -79
+  },
+  "FRGUI": {
+    "name": "Guiana Space Centre, Kourou, French Guiana",
+    "latDeg": 5.24,
+    "lonDeg": -52.77
+  },
+  "HGSTR": {
+    "name": "Hammaguir, Algeria",
+    "latDeg": 30.89,
+    "lonDeg": -3.06
+  },
+  "JJSLA": {
+    "name": "Jeju Island sea launch area, South Korea",
+    "latDeg": 33,
+    "lonDeg": 126.5
+  },
+  "JSC": {
+    "name": "Jiuquan Satellite Launch Center, China",
+    "latDeg": 40.96,
+    "lonDeg": 100.29
+  },
+  "KODAK": {
+    "name": "Pacific Spaceport Complex, Kodiak, Alaska, USA",
+    "latDeg": 57.44,
+    "lonDeg": -152.34
+  },
+  "KSCUT": {
+    "name": "Uchinoura Space Center, Japan",
+    "latDeg": 31.25,
+    "lonDeg": 131.08
+  },
+  "KWAJ": {
+    "name": "Kwajalein Atoll, Marshall Islands",
+    "latDeg": 9.05,
+    "lonDeg": 167.74
+  },
+  "KYMSC": {
+    "name": "Kapustin Yar, Russia",
+    "latDeg": 48.59,
+    "lonDeg": 45.72
+  },
+  "NSC": {
+    "name": "Naro Space Center, South Korea",
+    "latDeg": 34.43,
+    "lonDeg": 127.54
+  },
+  "PLMSC": {
+    "name": "Plesetsk Cosmodrome, Russia",
+    "latDeg": 62.93,
+    "lonDeg": 40.57
+  },
+  "RLLB": {
+    "name": "Rocket Lab Launch Complex 1, Mahia, New Zealand",
+    "latDeg": -39.26,
+    "lonDeg": 177.86
+  },
+  "SCSLA": {
+    "name": "South China Sea launch area, China",
+    "latDeg": 20,
+    "lonDeg": 112
+  },
+  "SEAL": {
+    "name": "Sea Launch platform (Pacific Ocean)",
+    "latDeg": 0,
+    "lonDeg": -154
+  },
+  "SEMLS": {
+    "name": "Semnan (Imam Khomeini) Spaceport, Iran",
+    "latDeg": 35.23,
+    "lonDeg": 53.92
+  },
+  "SMTS": {
+    "name": "Shahroud Missile Test Site, Iran",
+    "latDeg": 36.2,
+    "lonDeg": 55.33
+  },
+  "SNMLP": {
+    "name": "San Marco platform, Kenya",
+    "latDeg": -2.94,
+    "lonDeg": 40.21
+  },
+  "SPKII": {
+    "name": "Spaceport Kii, Japan",
+    "latDeg": 33.55,
+    "lonDeg": 135.89
+  },
+  "SRILR": {
+    "name": "Satish Dhawan Space Centre, Sriharikota, India",
+    "latDeg": 13.72,
+    "lonDeg": 80.23
+  },
+  "STARB": {
+    "name": "Starbase, Texas, USA",
+    "latDeg": 25.99,
+    "lonDeg": -97.15
+  },
+  "SUBL": {
+    "name": "Submarine launch (mobile)",
+    "latDeg": null,
+    "lonDeg": null
+  },
+  "SVOBO": {
+    "name": "Svobodny, Russia",
+    "latDeg": 51.83,
+    "lonDeg": 128.28
+  },
+  "TAISC": {
+    "name": "Taiyuan Satellite Launch Center, China",
+    "latDeg": 38.85,
+    "lonDeg": 111.61
+  },
+  "TANSC": {
+    "name": "Tanegashima Space Center, Japan",
+    "latDeg": 30.4,
+    "lonDeg": 130.97
+  },
+  "TYMSC": {
+    "name": "Baikonur Cosmodrome, Kazakhstan",
+    "latDeg": 45.92,
+    "lonDeg": 63.34
+  },
+  "UNK": {
+    "name": "Unknown",
+    "latDeg": null,
+    "lonDeg": null
+  },
+  "VOSTO": {
+    "name": "Vostochny Cosmodrome, Russia",
+    "latDeg": 51.88,
+    "lonDeg": 128.33
+  },
+  "WLPIS": {
+    "name": "Wallops Flight Facility, Virginia, USA",
+    "latDeg": 37.94,
+    "lonDeg": -75.47
+  },
+  "WOMRA": {
+    "name": "Woomera, Australia",
+    "latDeg": -30.96,
+    "lonDeg": 136.5
+  },
+  "WRAS": {
+    "name": "Western Range airspace (air launch), USA",
+    "latDeg": 34,
+    "lonDeg": -121.5
+  },
+  "WSC": {
+    "name": "Wenchang Space Launch Site, China",
+    "latDeg": 19.61,
+    "lonDeg": 110.95
+  },
+  "XICLF": {
+    "name": "Xichang Satellite Launch Center, China",
+    "latDeg": 28.25,
+    "lonDeg": 102.03
+  },
+  "YAVNE": {
+    "name": "Palmachim (Yavne), Israel",
+    "latDeg": 31.88,
+    "lonDeg": 34.68
+  },
+  "YSLA": {
+    "name": "Yellow Sea launch area, China",
+    "latDeg": 35,
+    "lonDeg": 123
+  },
+  "YUN": {
+    "name": "Sohae Satellite Launching Station, North Korea",
+    "latDeg": 39.66,
+    "lonDeg": 124.71
+  }
+}

@@ -1,0 +1,27 @@
+[
+  { "id": "starlink", "name": "Starlink", "namePattern": "^STARLINK" },
+  { "id": "oneweb", "name": "OneWeb", "namePattern": "^ONEWEB" },
+  { "id": "kuiper", "name": "Amazon Kuiper", "namePattern": "^KUIPER" },
+  { "id": "qianfan", "name": "Qianfan (Thousand Sails)", "namePattern": "^QIANFAN" },
+  { "id": "guowang", "name": "Guowang (China SatNet)", "namePattern": "^HULIANWANG DIGUI" },
+  { "id": "gps", "name": "GPS", "namePattern": "^NAVSTAR" },
+  { "id": "galileo", "name": "Galileo", "namePattern": "^GSAT0\\d{3} \\(GALILEO" },
+  { "id": "glonass", "name": "GLONASS", "namePattern": "\\[GLONASS" },
+  { "id": "beidou", "name": "BeiDou", "namePattern": "^BEIDOU" },
+  { "id": "qzss", "name": "QZSS (Michibiki)", "namePattern": "^QZS-" },
+  { "id": "navic", "name": "NavIC (IRNSS)", "namePattern": "^(IRNSS|NVS)-" },
+  { "id": "iridium", "name": "Iridium", "namePattern": "^IRIDIUM" },
+  { "id": "globalstar", "name": "Globalstar", "namePattern": "^GLOBALSTAR" },
+  { "id": "orbcomm", "name": "ORBCOMM", "namePattern": "^ORBCOMM" },
+  { "id": "o3b", "name": "O3b / O3b mPOWER", "namePattern": "^O3B" },
+  {
+    "id": "planet",
+    "name": "Planet (Flock, SkySat, Pelican)",
+    "namePattern": "^(FLOCK|SKYSAT|PELICAN)"
+  },
+  { "id": "spire", "name": "Spire (Lemur)", "namePattern": "^LEMUR" },
+  { "id": "iceye", "name": "ICEYE", "namePattern": "^ICEYE" },
+  { "id": "yaogan", "name": "Yaogan", "namePattern": "^YAOGAN" },
+  { "id": "jilin", "name": "Jilin-1", "namePattern": "^JILIN-1" },
+  { "id": "geely", "name": "Geely (GEESAT)", "namePattern": "^GEESAT" }
+]
