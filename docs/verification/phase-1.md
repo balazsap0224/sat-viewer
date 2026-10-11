@@ -61,3 +61,27 @@ Also tested: decayed objects and objects without SATCAT are skipped with a reaso
 Also checked without hand values: geodetic ↔ ECEF round trip (property test, ground to 50,000 km); agreement with satellite.js's own WGS-84 conversion to 1e-6° and 1 mm; the OMM and TLE forms of the same elements agree within 10 m; a decayed element set is reported, not drawn. All 16,701 objects of the live run propagate.
 
 **Question for the owner (SPEC.md 6.3 is [PROPOSED]):** with the proposed rules, inclined geosynchronous satellites (QZSS, BeiDou IGSO, old GEO satellites whose inclination has grown past 10°) come out as **MEO**, although they are at GEO altitude. Options: keep it; add a fifth class "IGSO"; or call anything with a period within 1 % of a sidereal day "GEO" whatever the inclination. Claude's suggestion: a fifth class "IGSO", since a GEO filter that hides them, or a MEO filter that includes them, would both surprise visitors.
+
+## Module 4: all satellites on a globe (milestone)
+
+**How to look at it:** `pnpm data` (uses the cache; no network request until the cache is 5.5 h old), then `pnpm web` and open http://localhost:5173.
+
+What Claude checked in a real browser (Edge, 1400 × 850, 2026-10-11 ≈ 12:10 UTC):
+
+| Id  | Check                                                                                  | Result                                                                                                                                                                                                            | ✓   |
+| --- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| 4.1 | All active satellites move                                                             | 16,701 points; the GEO belt shows as a ring at 6.6 Earth radii, the LEO shell hugs the globe                                                                                                                      |     |
+| 4.2 | **End check (SPEC.md 6.5):** the ISS matches an independent tracker within about 10 km | At Unix time 1791720581 (2026-10-11 12:09:41 UTC): SatViewer 32.5416° N, 87.9039° W, 426.21 km; wheretheiss.at 32.5493° N, 87.8938° W, 426.20 km. Difference 0.86 km north–south, 0.94 km east–west: **≈ 1.3 km** |     |
+| 4.3 | fps with all objects (target 60, SPEC.md 7.3)                                          | 60 fps at 1×, and at 1,000× forwards and backwards                                                                                                                                                                |     |
+| 4.4 | SGP4 time for all 16,701 objects in the worker                                         | 66 ms for the first sample, 14 ms once warmed up                                                                                                                                                                  |     |
+| 4.5 | Interpolation between samples within 1 km of SGP4 (SPEC.md 7.3)                        | Samples every 240 s of shown time, cubic Hermite curve; measured over a day: ISS 96 m, a Molniya orbit through perigee 52 m (`hermite.test.ts`)                                                                   |     |
+| 4.6 | Time bar: play/pause, direction, 1× / 10× / 100× / 1,000×, slider ±7 days, Now         | All work; the clock stops at the ±7 day edge; "Now" returns to live                                                                                                                                               |     |
+
+**Please check by hand:** open the site and https://wheretheiss.at (or Heavens-Above) side by side and compare the ISS panel (top right) with it. The white ring on the globe marks the ISS. Also try 1,000× and see that GEO satellites stay still over the Earth while LEO ones race around.
+
+Notes and known limits:
+
+- The ISS panel and ring compute the ISS on the main thread with `packages/core`, separately from the worker and the GPU interpolation, so a mismatch between the two paths would show.
+- First load: data 1.05 MB gzipped (SPEC.md 10 target 3 MB, met) plus JavaScript 0.36 MB gzipped, plus the Earth textures (8.2 MB of JPEG, the same as the game). The textures dominate; making them smaller or loading a low-resolution version first is a candidate for module 7.
+- No selection, hover, search or orbit lines yet: those are module 5.
+- The slider's keyboard step is 3 minutes.

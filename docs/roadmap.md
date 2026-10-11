@@ -11,7 +11,7 @@ Status: ✅ done and verified · 🔎 built, waiting for owner verification · �
 | 1   | Repo and globe            | New repo, copied globe and physics pieces, globe at the real current time            | Visual: day/night correct for now                                         | 🔎     |
 | 2   | Data job                  | Fetch CelesTrak GP + SATCAT + GCAT, validate, merge, owner table, polite caching     | Counts, a few records (ISS, a GPS satellite, a Starlink) look right       | 🔎     |
 | 3   | SGP4 and frames           | `satellite.js` wrapper, TEME → ECEF → WGS-84 geodetic, derived values, orbit classes | Reference values (SPEC.md 6.5)                                            | 🔎     |
-| 4   | All satellites on a globe | Worker propagation, instanced points, time bar                                       | **Milestone:** all active satellites move; the ISS matches a tracker; fps | ⬜     |
+| 4   | All satellites on a globe | Worker propagation, instanced points, time bar                                       | **Milestone:** all active satellites move; the ISS matches a tracker; fps | 🔎     |
 
 ## Phase 2: Exploring
 

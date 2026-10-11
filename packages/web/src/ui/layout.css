@@ -1,0 +1,142 @@
+/* SatViewer page layout: panels floating over the globe. Uses the theme's tokens (theme.css). */
+
+.app-header {
+  position: absolute;
+  top: var(--gutter);
+  left: var(--gutter);
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 8px 14px;
+}
+
+.notice {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 14px 18px;
+  text-align: center;
+}
+
+/* Time bar: bottom centre */
+.timebar {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, calc(100vw - 2 * var(--gutter)));
+  padding: 8px 12px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.timebar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.timebar-time {
+  font-size: 14px;
+  flex: 1;
+}
+
+.timebar-slider {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.timebar-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -4px;
+}
+
+.btn-active {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+
+/* ISS readout: top right */
+.iss-panel {
+  position: absolute;
+  top: var(--gutter);
+  right: var(--gutter);
+  width: 230px;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  margin: 0;
+}
+
+.kv dt {
+  color: var(--muted);
+}
+
+.kv dd {
+  margin: 0;
+  text-align: right;
+}
+
+/* Legend and status: bottom left */
+.status-corner {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 22px;
+  width: 230px;
+}
+
+.legend {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.credits {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--faint);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Narrow screens (desktop first, SPEC.md 10): stack the corners above the time bar. */
+@media (max-width: 900px) {
+  .status-corner {
+    display: none;
+  }
+  .iss-panel {
+    top: auto;
+    bottom: 150px;
+  }
+  .credits {
+    white-space: normal;
+    width: calc(100vw - 2 * var(--gutter));
+    text-align: center;
+  }
+}
+
+/* The offset ("+2 d 03:12") reads better in lower case than the badge's capitals. */
+.timebar .badge {
+  text-transform: none;
+}

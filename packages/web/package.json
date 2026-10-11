@@ -17,6 +17,7 @@
     "@react-three/fiber": "^9.8.1",
     "@sat-viewer/core": "workspace:*",
     "@sat-viewer/shared": "workspace:*",
+    "zod": "^4.6.5",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "three": "^0.186.1"
