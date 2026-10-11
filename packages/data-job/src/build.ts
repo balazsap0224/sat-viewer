@@ -24,7 +24,7 @@ import { z } from 'zod';
 import { checkCount, checkEpochs } from './checks';
 import { fetchAll } from './fetchAll';
 import { gcatIndex, parseGcatOrgs, parseGcatSatcat } from './gcat';
-import { merge } from './merge';
+import { dropUnpropagatable, merge } from './merge';
 import { type FetchLike, writeAtomic } from './politeFetch';
 import { SOURCES } from './sources';
 
@@ -83,15 +83,18 @@ export async function build(
   const gcatObjects = parseGcatSatcat(fetched.gcat.body);
   const gcatOrgs = parseGcatOrgs(fetched.gcatOrgs.body);
 
-  const merged = merge({
-    gp,
-    satcat,
-    findGcat: gcatIndex(gcatObjects),
-    gcatOrgs,
-    owners,
-    launchSites,
-    constellations,
-  });
+  const merged = dropUnpropagatable(
+    merge({
+      gp,
+      satcat,
+      findGcat: gcatIndex(gcatObjects),
+      gcatOrgs,
+      owners,
+      launchSites,
+      constellations,
+    }),
+    now.getTime(),
+  );
 
   const previous = await readPrevious(paths.outDir);
   checkCount(merged.rows.length, previous?.counts.objects);

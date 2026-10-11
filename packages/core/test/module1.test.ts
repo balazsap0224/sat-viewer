@@ -34,11 +34,11 @@ describe('Greenwich Mean Sidereal Time (IAU-1982)', () => {
     expect(Math.min(diff, 360 - diff)).toBeLessThan(0.001);
   });
 
-  it('agrees with satellite.js gstime (an independent implementation) to 1e-9 rad', () => {
+  it('agrees with satellite.js gstime (an independent implementation) to 1e-8 rad (6 cm at the surface; the two compute the Julian date differently, so they differ by rounding)', () => {
     fc.assert(
       fc.property(fc.integer({ min: Date.UTC(1980, 0), max: Date.UTC(2060, 0) }), (t) => {
         const d = Math.abs(gmst(t) - gstime(new Date(t)));
-        return Math.min(d, 2 * Math.PI - d) < 1e-9;
+        return Math.min(d, 2 * Math.PI - d) < 1e-8;
       }),
     );
   });

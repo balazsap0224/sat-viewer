@@ -14,6 +14,7 @@ import type {
   Owners,
   SatcatRecord,
 } from '@sat-viewer/shared';
+import { propagateAt, satrecFromElements } from '@sat-viewer/core';
 import type { GcatObject } from './gcat';
 
 export interface MergeInput {
@@ -123,5 +124,63 @@ export function merge(input: MergeInput): MergeResult {
     entries,
     skipped,
     unknownCodes: { owners: [...unknownOwners].sort(), launchSites: [...unknownSites].sort() },
+  };
+}
+
+/**
+ * Leaves out objects SGP4 cannot propagate at time t (SPEC.md 6.1 step 6), so the site never
+ * has to draw them. They are listed in meta.json with the reason. The site still checks every
+ * position at runtime, since an object can fail later in the ±7 day window.
+ */
+export function dropUnpropagatable(result: MergeResult, t: number): MergeResult {
+  const failed = new Map<number, string>();
+  for (const row of result.rows) {
+    const [
+      norad,
+      EPOCH,
+      MEAN_MOTION,
+      ECCENTRICITY,
+      INCLINATION,
+      RA_OF_ASC_NODE,
+      ARG_OF_PERICENTER,
+      MEAN_ANOMALY,
+      BSTAR,
+      MEAN_MOTION_DOT,
+      MEAN_MOTION_DDOT,
+    ] = row;
+    let s: ReturnType<typeof propagateAt>;
+    try {
+      s = propagateAt(
+        satrecFromElements({
+          NORAD_CAT_ID: norad,
+          EPOCH,
+          MEAN_MOTION,
+          ECCENTRICITY,
+          INCLINATION,
+          RA_OF_ASC_NODE,
+          ARG_OF_PERICENTER,
+          MEAN_ANOMALY,
+          BSTAR,
+          MEAN_MOTION_DOT,
+          MEAN_MOTION_DDOT,
+        }),
+        t,
+      );
+    } catch (e) {
+      failed.set(norad, `SGP4 initialisation failed: ${(e as Error).message}`);
+      continue;
+    }
+    if (!s.ok) failed.set(norad, `SGP4: ${s.failure}`);
+  }
+  if (failed.size === 0) return result;
+  const names = new Map(result.entries.map((e) => [e.norad, e.name]));
+  return {
+    ...result,
+    rows: result.rows.filter((r) => !failed.has(r[0])),
+    entries: result.entries.filter((e) => !failed.has(e.norad)),
+    skipped: [
+      ...result.skipped,
+      ...[...failed].map(([norad, reason]) => ({ norad, name: names.get(norad) ?? '', reason })),
+    ],
   };
 }

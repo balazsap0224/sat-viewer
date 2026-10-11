@@ -21,7 +21,7 @@ import { z } from 'zod';
 import { build, parseWith } from '../src/build';
 import { checkCount, checkEpochs, SanityError } from '../src/checks';
 import { gcatIndex, parseGcatOrgs, parseGcatSatcat } from '../src/gcat';
-import { merge } from '../src/merge';
+import { dropUnpropagatable, merge } from '../src/merge';
 import { type FetchLike, fetchSource, SourceError, USER_AGENT } from '../src/politeFetch';
 import { SOURCES } from '../src/sources';
 
@@ -275,5 +275,33 @@ describe('polite fetching (SPEC.md 4.3)', () => {
     );
     expect(elements.rows).toHaveLength(5);
     expect(catalog.entries).toHaveLength(5);
+  });
+});
+
+describe('objects SGP4 cannot propagate (SPEC.md 6.1 step 6)', () => {
+  it('are left out and listed with the reason', async () => {
+    const merged = await mergeFixtures();
+    // Make the ISS's element set impossible: mean motion 16 rev/day (a ≈ 6,640 km)
+    // with e = 0.99 puts the perigee thousands of km underground.
+    const broken = {
+      ...merged,
+      rows: merged.rows.map((r) =>
+        r[0] === 25544
+          ? ([r[0], r[1], 16, 0.99, r[4], r[5], r[6], r[7], r[8], r[9], r[10]] as typeof r)
+          : r,
+      ),
+    };
+    const out = dropUnpropagatable(broken, Date.parse('2026-10-11T12:00:00Z'));
+    expect(out.rows.map((r) => r[0])).not.toContain(25544);
+    expect(out.entries.map((e) => e.norad)).not.toContain(25544);
+    expect(out.skipped).toContainEqual(
+      expect.objectContaining({ norad: 25544, name: 'ISS (ZARYA)' }),
+    );
+    expect(out.skipped.find((s) => s.norad === 25544)?.reason).toMatch(/^SGP4/);
+  });
+
+  it('every object of the samples propagates', async () => {
+    const merged = await mergeFixtures();
+    expect(dropUnpropagatable(merged, Date.parse('2026-10-11T12:00:00Z')).skipped).toEqual([]);
   });
 });

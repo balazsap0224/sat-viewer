@@ -1,0 +1,8 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    // Tests may read fixture files with Node.
+    "types": ["node"]
+  },
+  "include": [".", "../src"]
+}

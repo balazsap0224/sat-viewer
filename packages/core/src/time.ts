@@ -45,3 +45,11 @@ export function wrapLon180(deg: number): number {
   const w = ((((deg + 180) % 360) + 360) % 360) - 180;
   return w === -180 ? 180 : w;
 }
+
+/**
+ * Parses an OMM epoch ("2026-10-11T04:13:59.875680": UTC without a time zone suffix, as
+ * CelesTrak writes it) to Unix ms. Digits beyond milliseconds are dropped (< 1 ms ≈ 8 m in LEO
+ * along track; satellite.js's json2satrec rounds the same way).
+ */
+export const epochToUnixMs = (epoch: string): UnixMs =>
+  Date.parse(epoch.endsWith('Z') ? epoch : `${epoch}Z`);

@@ -35,7 +35,7 @@ export default tseslint.config(
     extends: [tseslint.configs.disableTypeChecked],
   },
   {
-    files: ['packages/core/**/*.ts'],
+    files: ['packages/core/src/**/*.ts'],
     rules: { 'no-restricted-imports': ['error', { patterns: impureImports }] },
   },
 );

@@ -1,7 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    // No Node or DOM types: src must run identically in Node and the browser (SPEC.md 2.2).
     "types": []
   },
-  "include": ["src", "test"]
+  "include": ["src"]
 }
