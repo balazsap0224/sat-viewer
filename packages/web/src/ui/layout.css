@@ -1,9 +1,17 @@
 /* SatViewer page layout: panels floating over the globe. Uses the theme's tokens (theme.css). */
 
-.app-header {
+.left-column {
   position: absolute;
   top: var(--gutter);
   left: var(--gutter);
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2;
+}
+
+.app-header {
   display: flex;
   gap: 12px;
   align-items: baseline;
@@ -61,12 +69,200 @@
   border-color: var(--accent-line);
 }
 
-/* ISS readout: top right */
-.iss-panel {
+/* Info card: top right */
+.info-card {
   position: absolute;
   top: var(--gutter);
   right: var(--gutter);
-  width: 230px;
+  width: 300px;
+  max-height: calc(100vh - 2 * var(--gutter) - 150px);
+  display: flex;
+  flex-direction: column;
+}
+
+.info-sub {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  border-top: 0;
+  padding-top: 0;
+}
+
+.info-body {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.info-body .kv dd {
+  overflow-wrap: anywhere;
+}
+
+.info-h {
+  margin: 12px 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+.info-note {
+  margin: 8px 0 0;
+}
+
+.info-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.info-actions a.btn {
+  text-decoration: none;
+}
+
+.sat-label {
+  transform: translate(10px, -50%);
+  white-space: nowrap;
+  font-size: 12px;
+  color: #fff;
+  text-shadow:
+    0 0 3px #000,
+    0 0 6px #000;
+}
+
+/* Search */
+.search {
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  z-index: 3;
+}
+
+.search-result {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.search-result span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-result.active {
+  background: var(--accent-soft);
+}
+
+.search-empty {
+  padding: 4px 10px;
+}
+
+/* Filters */
+.filters-toggle {
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+}
+
+.filters-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip .legend-dot {
+  margin-right: 4px;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-row select {
+  min-width: 0;
+}
+
+.filter-years {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-year {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filter-year input {
+  width: 70px;
+}
+
+.about-link {
+  margin-left: auto;
+  font: inherit;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+/* Tooltip */
+.hover-tip {
+  position: absolute;
+  padding: 6px 10px;
+  pointer-events: none;
+  max-width: 280px;
+  z-index: 4;
+}
+
+/* About dialog */
+.about {
+  width: min(640px, calc(100vw - 2 * var(--gutter)));
+  max-height: calc(100vh - 4 * var(--gutter));
+  padding: 0;
+  color: inherit;
+}
+
+.about::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+
+.about-body {
+  overflow-y: auto;
+  max-height: calc(100vh - 8 * var(--gutter) - 40px);
+  line-height: 1.5;
+}
+
+.about-body a {
+  color: var(--accent);
+}
+
+.about-list {
+  margin: 0;
+  padding-left: 18px;
 }
 
 .kv {
@@ -125,9 +321,13 @@
   .status-corner {
     display: none;
   }
-  .iss-panel {
+  .info-card {
     top: auto;
     bottom: 150px;
+    max-height: 45vh;
+  }
+  .left-column {
+    width: calc(100vw - 2 * var(--gutter));
   }
   .credits {
     white-space: normal;
@@ -139,4 +339,11 @@
 /* The offset ("+2 d 03:12") reads better in lower case than the badge's capitals. */
 .timebar .badge {
   text-transform: none;
+}
+
+.app-tagline {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }

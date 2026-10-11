@@ -1,5 +1,6 @@
 // Loading the data files the data job wrote (SPEC.md 5) and checking them on arrival.
 
+import { orbitClass, type OrbitClass } from '@sat-viewer/core';
 import {
   type CatalogEntry,
   catalogFileSchema,
@@ -15,6 +16,10 @@ export interface SatData {
   readonly elements: ElementsFile;
   /** Catalog entries in the same order as elements.rows */
   readonly catalog: readonly (CatalogEntry | undefined)[];
+  /** Orbit class per row (SPEC.md 6.3), in the same order */
+  readonly classes: readonly OrbitClass[];
+  /** NORAD number → row index */
+  readonly indexOf: ReadonlyMap<number, number>;
   readonly meta: MetaFile;
 }
 
@@ -34,7 +39,13 @@ export async function loadData(base = '/data'): Promise<SatData> {
     getJson(`${base}/meta.json`, metaFileSchema),
   ]);
   const byNorad = new Map(catalogFile.entries.map((e) => [e.norad, e]));
-  return { elements, catalog: elements.rows.map((r) => byNorad.get(r[0])), meta };
+  return {
+    elements,
+    catalog: elements.rows.map((r) => byNorad.get(r[0])),
+    classes: elements.rows.map((r) => orbitClass(r[2], r[3], r[4])),
+    indexOf: new Map(elements.rows.map((r, i) => [r[0], i])),
+    meta,
+  };
 }
 
 export type DataState =

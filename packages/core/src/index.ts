@@ -6,3 +6,5 @@ export * from './sgp4';
 export * from './sun';
 export * from './time';
 export * from './vector';
+export * from './footprint';
+export * from './track';

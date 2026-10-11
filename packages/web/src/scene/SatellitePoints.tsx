@@ -6,10 +6,13 @@
 // frame (u, how far along), so the CPU does almost nothing per frame.
 //
 // Points are coloured by orbit class ([PROPOSED] SPEC.md 7.1). Objects SGP4 cannot propagate
-// at either end of the bracket are hidden (SPEC.md 6.1 step 6).
+// at either end of the bracket are hidden (SPEC.md 6.1 step 6), and so are objects the
+// filters leave out (`mask`).
+//
+// The current bracket and mask are also handed to satField.ts, for picking on the CPU.
 
 import { useFrame } from '@react-three/fiber';
-import { orbitClass, type OrbitClass } from '@sat-viewer/core';
+import type { OrbitClass } from '@sat-viewer/core';
 import type { ElementRow } from '@sat-viewer/shared';
 import { useEffect, useMemo, useRef } from 'react';
 import { BufferAttribute, BufferGeometry, Color, ShaderMaterial } from 'three';
@@ -18,6 +21,7 @@ import type { FromWorker, Sample, ToWorker } from '../sim/protocol';
 import { type Bracket, SampleStore } from '../sim/sampleStore';
 import { simClock } from '../state/simClock';
 import { perfStats } from '../state/perfStats';
+import { satField } from './satField';
 
 /** Point colours per orbit class (also used by the legend) */
 export const ORBIT_CLASS_COLORS: Record<OrbitClass, string> = {
@@ -73,9 +77,13 @@ const fragmentShader = /* glsl */ `
 
 export interface SatellitePointsProps {
   readonly rows: readonly ElementRow[];
+  /** Orbit class per row, for the colour */
+  readonly classes: readonly OrbitClass[];
+  /** 1 = passes the filters, 0 = hidden */
+  readonly mask: Uint8Array;
 }
 
-export function SatellitePoints({ rows }: SatellitePointsProps) {
+export function SatellitePoints({ rows, classes, mask }: SatellitePointsProps) {
   const n = rows.length;
 
   const geometry = useMemo(() => {
@@ -90,13 +98,13 @@ export function SatellitePoints({ rows }: SatellitePointsProps) {
     g.setAttribute('okAB', new BufferAttribute(new Float32Array(n), 1));
     const colors = new Float32Array(3 * n);
     const c = new Color();
-    rows.forEach((r, i) => {
-      c.set(ORBIT_CLASS_COLORS[orbitClass(r[2], r[3], r[4])]);
+    classes.forEach((cls, i) => {
+      c.set(ORBIT_CLASS_COLORS[cls]);
       colors.set([c.r, c.g, c.b], 3 * i);
     });
     g.setAttribute('color', new BufferAttribute(colors, 3));
     return g;
-  }, [rows, n]);
+  }, [classes, n]);
 
   const material = useMemo(
     () =>
@@ -124,7 +132,12 @@ export function SatellitePoints({ rows }: SatellitePointsProps) {
 
   // The worker and the sample store live as long as this set of rows.
   const store = useRef<SampleStore | undefined>(undefined);
-  const shown = useRef<{ a: Sample; b: Sample } | undefined>(undefined);
+  const shown = useRef<{ a: Sample; b: Sample; mask: Uint8Array } | undefined>(undefined);
+
+  useEffect(() => {
+    satField.setMask(mask);
+  }, [mask]);
+  useEffect(() => () => satField.setBracket(undefined), []);
 
   useEffect(() => {
     const worker = new Worker(new URL('../sim/propagation.worker.ts', import.meta.url), {
@@ -165,7 +178,7 @@ export function SatellitePoints({ rows }: SatellitePointsProps) {
     set('velB', bracket.b.vel);
     const ok = geometry.getAttribute('okAB') as BufferAttribute;
     const okArr = ok.array as Float32Array;
-    for (let i = 0; i < n; i++) okArr[i] = bracket.a.ok[i] && bracket.b.ok[i] ? 1 : 0;
+    for (let i = 0; i < n; i++) okArr[i] = bracket.a.ok[i] && bracket.b.ok[i] && mask[i] ? 1 : 0;
     ok.needsUpdate = true;
   };
 
@@ -174,10 +187,12 @@ export function SatellitePoints({ rows }: SatellitePointsProps) {
     if (!s) return;
     const bracket = s.update(simClock.now(), simClock.getState().rate);
     if (!bracket) return;
-    if (shown.current?.a !== bracket.a || shown.current?.b !== bracket.b) {
+    const sh = shown.current;
+    if (sh?.a !== bracket.a || sh.b !== bracket.b || sh.mask !== mask) {
       upload(bracket);
-      shown.current = { a: bracket.a, b: bracket.b };
+      shown.current = { a: bracket.a, b: bracket.b, mask };
     }
+    satField.setBracket(bracket);
     (material.uniforms.u as { value: number }).value = bracket.u;
     (material.uniforms.h as { value: number }).value = (bracket.b.t - bracket.a.t) / 1000;
   });

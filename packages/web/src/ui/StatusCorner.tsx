@@ -1,12 +1,12 @@
 // Bottom-left corner: object count, colour legend, data age, and performance (SPEC.md 7.3).
 
-import type { OrbitClass } from '@sat-viewer/core';
+import { ORBIT_CLASSES, type OrbitClass } from '@sat-viewer/core';
 import type { MetaFile } from '@sat-viewer/shared';
 import { useEffect, useState } from 'react';
 import { ORBIT_CLASS_COLORS } from '../scene/SatellitePoints';
 import { perfStats } from '../state/perfStats';
 
-const CLASS_NAMES: Record<OrbitClass, string> = {
+export const CLASS_NAMES: Record<OrbitClass, string> = {
   LEO: 'Low Earth orbit',
   MEO: 'Medium Earth orbit',
   GEO: 'Geostationary',
@@ -32,7 +32,7 @@ export function StatusCorner({ meta, count }: { readonly meta: MetaFile; readonl
           <span className="muted">active satellites</span>
         </div>
         <ul className="legend">
-          {(Object.keys(CLASS_NAMES) as OrbitClass[]).map((c) => (
+          {ORBIT_CLASSES.map((c) => (
             <li key={c}>
               <span className="legend-dot" style={{ background: ORBIT_CLASS_COLORS[c] }} />
               {c} <span className="faint">{CLASS_NAMES[c]}</span>

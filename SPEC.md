@@ -180,7 +180,7 @@ Generated data (not committed to git; built by the job and deployed with the sit
 
 - Reused from the game: textured Earth (Blue Marble day, Black Marble night, soft terminator), camera rig, focus-on-satellite, theme.
 - All objects as instanced points coloured by **[PROPOSED]** orbit class (filter-dependent alternatives: by owner, by type).
-- The selected object: orbit line, ground track (one orbit back, one ahead), coverage footprint, label.
+- The selected object: orbit line, ground track (one orbit back, one ahead, at most 2 days each way), coverage footprint (**[PROPOSED]** at the horizon, 0° elevation), label.
 - Hover shows name and owner; click opens the info card.
 
 ### 7.2 Panels

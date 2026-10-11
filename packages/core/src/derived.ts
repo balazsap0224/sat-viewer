@@ -34,6 +34,9 @@ export function apsidesKm(
 
 export type OrbitClass = 'LEO' | 'MEO' | 'GEO' | 'IGSO' | 'HEO';
 
+/** Every orbit class, in display order (low to high, then elliptical) */
+export const ORBIT_CLASSES: readonly OrbitClass[] = ['LEO', 'MEO', 'GEO', 'IGSO', 'HEO'];
+
 /** Thresholds for the orbit classes (SPEC.md 6.3, [PROPOSED]: easy to change here). */
 export const ORBIT_CLASS_RULES = {
   /** LEO: apogee below this altitude [km] */

@@ -38,3 +38,10 @@ export const constellationsSchema = z.array(
   }),
 );
 export type Constellations = z.infer<typeof constellationsSchema>;
+
+/**
+ * content/object-notes.json: a short note shown on the info card of a few objects, where a
+ * catalog value would mislead (NORAD number → text).
+ */
+export const objectNotesSchema = z.record(z.string().regex(/^\d+$/), z.string());
+export type ObjectNotes = z.infer<typeof objectNotesSchema>;
