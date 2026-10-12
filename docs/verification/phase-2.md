@@ -1,5 +1,7 @@
 # Phase 2: values for the owner to verify
 
+**Status: verified by the owner on 2026-10-12** (modules 5, 6 and 6b, the debris facts in `content/debris-clouds.json`, and the browser checks below).
+
 Phase 2 was built in one go (owner's choice, docs/decisions.md, 2026-10-11). Every value below is **PENDING OWNER VERIFICATION**: the tests pass, but a passing test only shows the code agrees with the number written in the test. Please check each number by hand (or against the cited source) and tick it. Test ids such as `[5.1]` appear in the test names.
 
 ## Module 5: search, filters, info card (`packages/core/test/module5.test.ts`)
@@ -116,7 +118,7 @@ Known limits:
 
 ## Module 6b: closest meetings (`packages/core/test/module6b.test.ts`)
 
-Added 2026-10-12 at the owner's request (own calculation, before the Phase 2 sign-off). **PENDING OWNER VERIFICATION.**
+Added 2026-10-12 at the owner's request (own calculation, before the Phase 2 sign-off). Verified by the owner on 2026-10-12.
 
 ### Reference values
 

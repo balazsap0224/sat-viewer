@@ -1,6 +1,6 @@
 # Phase 1: values for the owner to verify
 
-**Status (2026-10-11): verified by the owner**, except the IGSO cases added to 3.13 afterwards, which are **PENDING OWNER VERIFICATION**.
+**Status: verified by the owner** on 2026-10-11; the IGSO cases added to 3.13 afterwards were verified on 2026-10-12.
 
 Phase 1 was built in one go while the owner was away (docs/decisions.md, 2026-10-11). Every value below was **PENDING OWNER VERIFICATION** until then: the tests pass, but a passing test only shows the code agrees with the number written in the test. Please check each number by hand (or against the cited source) and tick it. Test ids such as `[1.2]` appear in the test names.
 
@@ -58,7 +58,7 @@ Also tested: decayed objects and objects without SATCAT are skipped with a reaso
 | 3.10 | ISS period 92.974 min (SATCAT: 92.98)                                                                                                                                                                             | 1440 / 15.48821882                                                                                                                                        |                                               |     |
 | 3.11 | ISS a = 6798.31 km, perigee 415.6 km, apogee 424.7 km (SATCAT: 416 / 425)                                                                                                                                         | n = 15.48821882 × 2π / 86400 = 0.00112630 rad/s; a = (398600.4418 / n²)^(1/3); a(1 ∓ 0.00067135) − 6378.137                                               |                                               |     |
 | 3.12 | GEO n = 1.00273771 rev/day → period 86,164.1 s (one sidereal day), a = 42,164.2 km                                                                                                                                | 1440 / 1.00273771 × 60                                                                                                                                    |                                               |     |
-| 3.13 | Classes: ISS LEO, GPS MEO, ASTRA 1KR GEO, Meridian 7 (e = 0.66) HEO. **New, pending:** n = 1.0027, e = 0.075, i = 40° → IGSO; i = 10° → IGSO, i = 9.99° → GEO (boundary); e = 0.27, i = 63.4° (Tundra-like) → HEO | Rules in `docs/orbit-notes.md`                                                                                                                            | SPEC.md 6.3                                   |     |
+| 3.13 | Classes: ISS LEO, GPS MEO, ASTRA 1KR GEO, Meridian 7 (e = 0.66) HEO. **Added for IGSO (verified 2026-10-12):** n = 1.0027, e = 0.075, i = 40° → IGSO; i = 10° → IGSO, i = 9.99° → GEO (boundary); e = 0.27, i = 63.4° (Tundra-like) → HEO | Rules in `docs/orbit-notes.md`                                                                                                                            | SPEC.md 6.3                                   |     |
 
 Also checked without hand values: geodetic ↔ ECEF round trip (property test, ground to 50,000 km); agreement with satellite.js's own WGS-84 conversion to 1e-6° and 1 mm; the OMM and TLE forms of the same elements agree within 10 m; a decayed element set is reported, not drawn. All 16,701 objects of the live run propagate.
 

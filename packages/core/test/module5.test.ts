@@ -1,5 +1,5 @@
 // Module 5 reference values: coverage footprint, orbit line, ground track.
-// PENDING OWNER VERIFICATION, see docs/verification/phase-2.md, section "Module 5".
+// Verified by the owner on 2026-10-12, see docs/verification/phase-2.md, section "Module 5".
 
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';

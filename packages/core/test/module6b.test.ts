@@ -1,5 +1,5 @@
 // Module 6b reference values: close approaches ("closest meetings").
-// PENDING OWNER VERIFICATION, see docs/verification/phase-2.md, section "Module 6b".
+// Verified by the owner on 2026-10-12, see docs/verification/phase-2.md, section "Module 6b".
 
 import { describe, expect, it } from 'vitest';
 import { MU_EARTH, R_EARTH } from '../src/constants';

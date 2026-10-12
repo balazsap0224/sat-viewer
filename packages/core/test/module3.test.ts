@@ -1,6 +1,6 @@
 // Module 3 reference values: SGP4 wrapper on OMM elements, TEME → ECEF → WGS-84 geodetic,
-// derived values, orbit classes. Verified by the owner on 2026-10-11, except the IGSO cases
-// added to [3.13] afterwards, which are PENDING OWNER VERIFICATION; see
+// derived values, orbit classes. Verified by the owner on 2026-10-11 (the IGSO cases added to
+// [3.13] afterwards on 2026-10-12); see
 // docs/verification/phase-1.md, section "Module 3". (The official SGP4 cases are in
 // sgp4Verification.test.ts.)
 
