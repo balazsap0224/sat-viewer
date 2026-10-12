@@ -8,3 +8,5 @@ Both images are produced by NASA and are in the public domain (NASA imagery is n
 | `earth-night-west.jpg`, `earth-night-east.jpg` | Black Marble 2016, 3 km resolution, 13500×6750 source. https://visibleearth.nasa.gov/images/144898                                    | NASA Earth Observatory images by Joshua Stevens, using Suomi NPP VIIRS data from Miguel Román, NASA's Goddard Space Flight Center.                                                  |
 
 Both are resized to 10800×5400 and split into a west half (longitude −180° to 0°) and an east half (0° to 180°), 5400×5400 each, by `scripts/prepare-textures.mjs` in the Orbital game repository (`../proj`), and copied here unchanged. Equirectangular projection, north at the top.
+
+The `*-small.jpg` files (2048×2048 each, loaded first; see `packages/web/src/scene/textureDetail.ts`) are those four resized with sharp (Lanczos3, JPEG quality 85, progressive, mozjpeg) on 2026-10-12.

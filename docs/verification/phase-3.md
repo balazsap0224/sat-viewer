@@ -31,8 +31,14 @@ data refreshes. Setup steps: `docs/hosting.md`.
 
 Closest-meetings screening: 3 min on the owner's desktop; the workflow allows 45 min in all.
 
-**Known limit:** the Earth textures are most of the first load (about 10 MB in all). Smaller
-textures, or loading the night side later, would cut it; owner's choice, not done.
+**Earth textures (changed 2026-10-12, owner left the choice to Claude):** the globe now starts with
+2048-px versions (1.35 MB for all four) and downloads the 5400-px ones (8.2 MB) only when the
+camera comes close enough for the difference to show (`textureDetail.ts`: about 3 Earth radii
+from the centre on a 1080-px-tall screen, 5 on a high-density one). First load is now about
+3.1 MB in all (data + code 1.73 MB, textures 1.35 MB).
+
+**Actions minutes:** a deploy run takes about 5 min (owner, 2026-10-12): 4 a day is about
+600 of the private repo's 2,000 free minutes a month, plus pushes and CI.
 
 ### Owner checks after the first deploy
 
