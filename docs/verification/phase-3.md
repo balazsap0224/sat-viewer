@@ -39,11 +39,11 @@ textures, or loading the night side later, would cut it; owner's choice, not don
 | Check                                                                                          | ✓              |
 | ---------------------------------------------------------------------------------------------- | -------------- |
 | The first "Data and deploy" run is green and the site opens at https://satviewer-8hx.pages.dev | ✓ (2026-10-12) |
-| The ISS on the live site matches a tracker (e.g. wheretheiss.at)                               |                |
-| About page: fetch times are from that run                                                      |                |
+| The ISS on the live site matches a tracker (e.g. wheretheiss.at)                               | ✓ (2026-10-12) |
+| About page: fetch times are from that run                                                      | ✓ (2026-10-12) |
 | After the 00:17 UTC run on 13 October, the About page's orbit fetch time has moved on (\*)     |                |
-| Web Analytics enabled in Cloudflare                                                            |                |
-| The CelesTrak usage policy has been read (SPEC.md 15)                                          |                |
+| Web Analytics enabled in Cloudflare                                                            | ✓ (2026-10-12) |
+| The CelesTrak usage policy has been read (SPEC.md 15)                                          | ✓ (2026-10-12) |
 
 (\*) The first run (a push, 15:24 UTC) was off the 6-hour beat. Orbit data is fetched again only once
 the cached copy is 5.5 hours old (`sources.ts`), so the 18:17 run kept the 15:24 data; that is
