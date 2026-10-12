@@ -26,3 +26,9 @@ Status: ✅ done and verified · 🔎 built, waiting for owner verification · �
 | #   | Module               | Status |
 | --- | -------------------- | ------ |
 | 7   | Schedule and hosting | 🔎     |
+
+## Phase 4: Phones
+
+| #   | Module       | Status |
+| --- | ------------ | ------ |
+| 8   | Phone layout | 🔎     |

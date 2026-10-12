@@ -240,9 +240,15 @@ Same working method as the game: one module at a time, the owner checks each one
 | --- | -------------------- | -------------------------------------------------------------------------------- | ----------------------------- |
 | 7   | Schedule and hosting | GitHub Actions schedule, deploy, About page, attribution, a few Playwright tests | The live site; data refreshes |
 
+### Phase 4: Phones (owner, 2026-10-12: "from phone it's quite unusable")
+
+| #   | Module       | What it does                                                                                                                                                                                                                                                               | What the owner checks             |
+| --- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| 8   | Phone layout | Below 700 px wide or 500 px tall: globe full screen; slim top bar (name, search, About); compact time bar and tabs (Watchlist, Passes, Meetings, Filters) at the bottom; each tab and the info card open in a bottom sheet (a left panel in landscape); bigger tap targets | The site on the owner's own phone |
+
 ### Later (only if wanted)
 
-Rocket bodies, other debris and dead satellites (need Space-Track); Hungarian translation; statistics pages (satellites by country, by year, launches per year); decayed and historical objects; Wikipedia photos; 3D models for a few famous satellites; mobile layout; a "real satellites" layer inside the game.
+Rocket bodies, other debris and dead satellites (need Space-Track); Hungarian translation; statistics pages (satellites by country, by year, launches per year); decayed and historical objects; Wikipedia photos; 3D models for a few famous satellites; a "real satellites" layer inside the game.
 
 ---
 
@@ -259,7 +265,7 @@ Rocket bodies, other debris and dead satellites (need Space-Track); Hungarian tr
 - First load under about 3 MB of data compressed **[PROPOSED]** (compact element format, gzip/brotli by the host).
 - The data sources need no accounts. The only secret is the hosting deploy token, kept in GitHub's secret store, never in the repo.
 - No tracking cookies, so no cookie banner is needed (analytics, if any, must be cookieless).
-- Works in current Firefox, Chrome and Edge; desktop first.
+- Works in current Firefox, Chrome and Edge; desktop first, with a phone layout (module 8).
 - Readable code with comments that explain the orbital mechanics.
 
 ---

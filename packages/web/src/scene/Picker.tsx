@@ -8,8 +8,9 @@ import { hoverStore, selection } from '../state/selection';
 import { pickNearest } from './pick';
 import { satField } from './satField';
 
-/** How close the pointer must be to a point [CSS px] */
+/** How close the pointer must be to a point [CSS px]; a fingertip gets more room (module 8). */
 const PICK_RADIUS_PX = 8;
+const TOUCH_PICK_RADIUS_PX = 22;
 /** A press that moves less than this is a click, not a drag of the globe [px] */
 const CLICK_SLOP_PX = 5;
 
@@ -21,7 +22,7 @@ export function Picker({ norads }: { readonly norads: readonly number[] }) {
   const down = useRef<{ x: number; y: number } | undefined>(undefined);
   const matrix = useRef(new Matrix4());
 
-  const pickAt = (x: number, y: number): number | undefined => {
+  const pickAt = (x: number, y: number, radius = PICK_RADIUS_PX): number | undefined => {
     const el = gl.domElement;
     camera.updateMatrixWorld();
     matrix.current.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
@@ -37,7 +38,7 @@ export function Picker({ norads }: { readonly norads: readonly number[] }) {
       },
       x,
       y,
-      PICK_RADIUS_PX,
+      radius,
     );
     return i === undefined ? undefined : norads[i];
   };
@@ -49,6 +50,7 @@ export function Picker({ norads }: { readonly norads: readonly number[] }) {
       return { x: e.clientX - r.left, y: e.clientY - r.top };
     };
     const move = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return; // no hover on a touch screen
       pointer.current = local(e);
       dirty.current = true;
     };
@@ -64,7 +66,8 @@ export function Picker({ norads }: { readonly norads: readonly number[] }) {
       down.current = undefined;
       const p = local(e);
       if (!d || Math.hypot(p.x - d.x, p.y - d.y) > CLICK_SLOP_PX) return;
-      const norad = pickAt(p.x, p.y);
+      const radius = e.pointerType === 'touch' ? TOUCH_PICK_RADIUS_PX : PICK_RADIUS_PX;
+      const norad = pickAt(p.x, p.y, radius);
       if (norad !== undefined) selection.select(norad);
     };
     el.addEventListener('pointermove', move);

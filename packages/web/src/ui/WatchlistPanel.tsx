@@ -1,6 +1,7 @@
 // The watchlist (state/watchlist.ts): the visitor's own satellites, one click away. Opens and
-// closes like the filters. "Show only these" puts the list into the filters' chosen list, which
-// also turns the passes panel into a timetable of their passes over the visitor.
+// closes like the filters (in a phone sheet, `sheet`, it is always open). "Show only these"
+// puts the list into the filters' chosen list, which also turns the passes panel into a
+// timetable of their passes over the visitor.
 
 import { useState } from 'react';
 import type { SatData } from '../data/load';
@@ -8,10 +9,18 @@ import { filtersStore, useFilters } from '../state/filters';
 import { selection } from '../state/selection';
 import { useWatchlist, watchlist } from '../state/watchlist';
 
-export function WatchlistPanel({ data }: { readonly data: SatData }) {
+export function WatchlistPanel({
+  data,
+  sheet = false,
+}: {
+  readonly data: SatData;
+  /** In a phone sheet (module 8): always open, no toggle. */
+  readonly sheet?: boolean;
+}) {
   const list = useWatchlist();
   const { only } = useFilters();
-  const [open, setOpen] = useState(false);
+  const [openState, setOpen] = useState(false);
+  const open = sheet || openState;
   const nameOf = (norad: number) => {
     const i = data.indexOf.get(norad);
     return (i !== undefined ? data.catalog[i]?.name : undefined) ?? `${norad} (not in the data)`;
@@ -23,13 +32,17 @@ export function WatchlistPanel({ data }: { readonly data: SatData }) {
   return (
     <section className="pane watchlist" aria-label="Watchlist">
       <div className="pane-head">
-        <button
-          className="btn-ghost filters-toggle"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-        >
-          {open ? '▾' : '▸'} Watchlist
-        </button>
+        {sheet ? (
+          <h2 className="pane-title">Watchlist</h2>
+        ) : (
+          <button
+            className="btn-ghost filters-toggle"
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? '▾' : '▸'} Watchlist
+          </button>
+        )}
         <span className="small num muted">{list.length}</span>
       </div>
       {open && (

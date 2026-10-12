@@ -90,9 +90,11 @@ export interface InfoCardProps {
   readonly entry: CatalogEntry | undefined;
   readonly cls: OrbitClass;
   readonly satrec: SatRec;
+  /** Phone sheet folded down (module 8): only the name, altitude and speed. */
+  readonly folded?: boolean;
 }
 
-export function InfoCard({ row, entry, cls, satrec }: InfoCardProps) {
+export function InfoCard({ row, entry, cls, satrec, folded = false }: InfoCardProps) {
   const { focused } = useSelection();
   const t = useTicker(250);
   const norad = row[0];
@@ -113,18 +115,38 @@ export function InfoCard({ row, entry, cls, satrec }: InfoCardProps) {
   const note = OBJECT_NOTES[String(norad)];
   const cloud = DEBRIS_CLOUDS.find((c) => c.id === entry?.debrisCloud);
 
+  const closeButton = (
+    <button
+      className="icon-btn"
+      onClick={() => selection.select(null)}
+      aria-label="Close"
+      title="Close"
+    >
+      ×
+    </button>
+  );
+
+  if (folded) {
+    return (
+      <section className="pane info-card info-folded" aria-label={`About ${name}`}>
+        <div className="pane-head">
+          <h2 className="pane-title">{name}</h2>
+          {here && s.ok && (
+            <span className="num small muted">
+              {fmtInt(here.altKm)} km · {norm(s.v).toFixed(2)} km/s
+            </span>
+          )}
+          {closeButton}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="pane info-card" aria-label={`About ${name}`}>
       <div className="pane-head">
         <h2 className="pane-title">{name}</h2>
-        <button
-          className="icon-btn"
-          onClick={() => selection.select(null)}
-          aria-label="Close"
-          title="Close"
-        >
-          ×
-        </button>
+        {closeButton}
       </div>
       <div className="pane-section info-sub">
         <span className="num muted">

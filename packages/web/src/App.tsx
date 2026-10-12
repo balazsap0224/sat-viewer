@@ -11,6 +11,7 @@ import { Picker } from './scene/Picker';
 import { ORBIT_CLASS_COLORS, SatellitePoints } from './scene/SatellitePoints';
 import { SelectedSat } from './scene/SelectedSat';
 import { Sun } from './scene/Sun';
+import { ViewShift } from './scene/ViewShift';
 import { filterMask, useFilters } from './state/filters';
 import { perfStats } from './state/perfStats';
 import { useSelection } from './state/selection';
@@ -21,9 +22,11 @@ import { HoverTip } from './ui/HoverTip';
 import { InfoCard } from './ui/InfoCard';
 import { MeetingsPanel } from './ui/MeetingsPanel';
 import { PassesPanel } from './ui/PassesPanel';
+import { type LayoutProps, PhoneLayout } from './ui/PhoneLayout';
 import { SearchBox } from './ui/SearchBox';
 import { StatusCorner } from './ui/StatusCorner';
 import { TimeBar } from './ui/TimeBar';
+import { usePhone } from './ui/usePhone';
 import { WatchlistPanel } from './ui/WatchlistPanel';
 
 /** Counts rendered frames for the fps readout. */
@@ -61,7 +64,8 @@ function useSelected(data: SatData | undefined) {
 }
 
 /**
- * SatViewer: one 3D canvas fills the window; panels float over it.
+ * SatViewer: one 3D canvas fills the window; panels float over it. Phones get their own
+ * arrangement of the same panels (ui/PhoneLayout.tsx, module 8).
  */
 export function App() {
   const state = useSatData();
@@ -76,6 +80,7 @@ export function App() {
   const norads = useMemo(() => data?.elements.rows.map((r) => r[0]) ?? [], [data]);
   const { sel, focused, other } = useSelected(data);
   const [about, setAbout] = useState(false);
+  const phone = usePhone();
 
   return (
     <>
@@ -114,14 +119,49 @@ export function App() {
         <OrbitControls makeDefault enablePan={false} minDistance={1.5} maxDistance={30} />
         <CameraRig satrec={focused ? sel?.satrec : undefined} />
         {data && <Picker norads={norads} />}
+        <ViewShift />
         <FrameCounter />
       </Canvas>
 
+      {state.status === 'loading' && <div className="pane notice">Loading satellite data…</div>}
+      {state.status === 'error' && (
+        <div className="pane notice" role="alert">
+          Could not load the satellite data: {state.message}
+          <div className="faint small">Run the data job first: pnpm data</div>
+        </div>
+      )}
+      {data && about && <AboutDialog meta={data.meta} onClose={() => setAbout(false)} />}
+
+      {phone ? (
+        <PhoneLayout
+          data={data}
+          sel={sel}
+          mask={mask}
+          shown={shown}
+          onAbout={() => setAbout(true)}
+        />
+      ) : (
+        <DesktopLayout
+          data={data}
+          sel={sel}
+          mask={mask}
+          shown={shown}
+          onAbout={() => setAbout(true)}
+        />
+      )}
+    </>
+  );
+}
+
+/** The desktop arrangement: two columns of panels, the time bar bottom centre. */
+function DesktopLayout({ data, sel, mask, shown, onAbout }: LayoutProps) {
+  return (
+    <>
       <div className="left-column">
         <header className="pane app-header">
           <strong style={{ fontSize: 15 }}>SatViewer</strong>
           <span className="muted small app-tagline">Every active satellite, live</span>
-          <button className="btn-ghost small about-link" onClick={() => setAbout(true)}>
+          <button className="btn-ghost small about-link" onClick={onAbout}>
             About
           </button>
         </header>
@@ -139,14 +179,6 @@ export function App() {
         {data && <StatusCorner meta={data.meta} />}
       </div>
 
-      {state.status === 'loading' && <div className="pane notice">Loading satellite data…</div>}
-      {state.status === 'error' && (
-        <div className="pane notice" role="alert">
-          Could not load the satellite data: {state.message}
-          <div className="faint small">Run the data job first: pnpm data</div>
-        </div>
-      )}
-
       <div className="right-column">
         {data && sel && (
           <InfoCard
@@ -160,7 +192,6 @@ export function App() {
         {data && <FiltersPanel data={data} shown={shown} />}
       </div>
       {data && <HoverTip data={data} />}
-      {data && about && <AboutDialog meta={data.meta} onClose={() => setAbout(false)} />}
 
       <TimeBar />
 

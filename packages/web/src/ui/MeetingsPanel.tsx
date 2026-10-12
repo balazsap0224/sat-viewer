@@ -42,11 +42,15 @@ function useShownTime(): number {
 export function MeetingsPanel({
   data,
   mask,
+  sheet = false,
 }: {
   readonly data: SatData;
   readonly mask: Uint8Array;
+  /** In a phone sheet (module 8): always open, no toggle. */
+  readonly sheet?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [openState, setOpen] = useState(false);
+  const open = sheet || openState;
   const [sameGroup, setSameGroup] = useState(false);
   const enc = useEncounters(open);
   const t = useShownTime();
@@ -94,13 +98,17 @@ export function MeetingsPanel({
   return (
     <section className="pane meetings" aria-label="Closest meetings">
       <div className="pane-head">
-        <button
-          className="btn-ghost filters-toggle"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-        >
-          {open ? '▾' : '▸'} Closest meetings
-        </button>
+        {sheet ? (
+          <h2 className="pane-title">Closest meetings</h2>
+        ) : (
+          <button
+            className="btn-ghost filters-toggle"
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? '▾' : '▸'} Closest meetings
+          </button>
+        )}
         <span className="small muted">next 24 h</span>
       </div>
       {open && (

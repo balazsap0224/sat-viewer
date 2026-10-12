@@ -160,9 +160,19 @@ function ChosenSatellites({ data }: { readonly data: SatData }) {
   );
 }
 
-export function FiltersPanel({ data, shown }: { readonly data: SatData; readonly shown: number }) {
+export function FiltersPanel({
+  data,
+  shown,
+  sheet = false,
+}: {
+  readonly data: SatData;
+  readonly shown: number;
+  /** In a phone sheet (module 8): always open, no toggle. */
+  readonly sheet?: boolean;
+}) {
   const f = useFilters();
-  const [open, setOpen] = useState(() => isFiltering(filtersStore.get()));
+  const [openState, setOpen] = useState(() => isFiltering(filtersStore.get()));
+  const open = sheet || openState;
   const total = data.elements.rows.length;
 
   // "Show only this" on the info card opens the panel, so the list can be seen and edited.
@@ -213,13 +223,17 @@ export function FiltersPanel({ data, shown }: { readonly data: SatData; readonly
   return (
     <section className="pane filters" aria-label="Filters">
       <div className="pane-head">
-        <button
-          className="btn-ghost filters-toggle"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-        >
-          {open ? '▾' : '▸'} Filters
-        </button>
+        {sheet ? (
+          <h2 className="pane-title">Filters</h2>
+        ) : (
+          <button
+            className="btn-ghost filters-toggle"
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? '▾' : '▸'} Filters
+          </button>
+        )}
         <span className="small num muted" aria-live="polite">
           {shown === total
             ? `${fmtInt(total)} objects`

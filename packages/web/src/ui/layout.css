@@ -652,3 +652,244 @@
   align-items: flex-start;
   color: var(--muted);
 }
+
+/*
+  Phone layout (module 8, ui/PhoneLayout.tsx): shown below 700 px wide or 500 px tall
+  (ui/usePhone.ts has the same numbers). The globe fills the screen; a slim bar on top; the
+  sheet, time bar, tabs and a one-line credit at the bottom. 100dvh is the height left over by
+  the phone browser's own address and tool bars, so nothing hides behind them.
+*/
+.phone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100dvh;
+  padding: 8px 8px max(2px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.phone > *,
+.phone-dock > * {
+  pointer-events: auto;
+}
+
+.phone-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  flex: none;
+}
+
+.phone-name {
+  font-size: 14px;
+  flex: none;
+}
+
+.phone-top .search {
+  flex: 1;
+  min-width: 0;
+}
+
+.phone-top .search-input {
+  min-height: 36px;
+  font-size: 16px; /* 16 px or more: phone browsers do not zoom in when the field is tapped */
+}
+
+.phone-about {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+}
+
+.phone-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  pointer-events: none;
+}
+
+/* The sheet: at most about half the screen, scrolls inside. */
+.phone-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 45dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.phone-sheet.folded > .pane:not(.info-folded) {
+  display: none;
+}
+
+.phone-fold {
+  align-self: flex-end;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--glass);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--line);
+}
+
+/* Inside the sheet the sheet scrolls, so the panels drop their own height caps. */
+.phone-sheet .info-card {
+  max-height: none;
+  min-height: 0;
+}
+
+.phone-sheet .passes-body,
+.phone-sheet .meetings-body,
+.phone-sheet .watch-body {
+  max-height: none;
+}
+
+/* The legend, hidden on narrow desktop windows (max-width: 900px above), shows in the sheet. */
+.phone-sheet .status-corner {
+  display: block;
+  width: auto;
+  margin-top: 0;
+}
+
+.info-folded .pane-head {
+  padding: 8px 6px 8px 12px;
+}
+
+/* Bigger tap targets: about 36 px, the smallest a fingertip hits reliably. */
+.phone .btn,
+.phone .pass-row,
+.phone .watch-name {
+  min-height: 36px;
+}
+
+.phone .btn-small {
+  font-size: 12.5px;
+  padding: 4px 10px;
+}
+
+.phone .icon-btn {
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.phone .field,
+.phone select {
+  min-height: 36px;
+  font-size: 16px;
+}
+
+/* Compact time bar (TimeBar `compact`): in the dock instead of floating bottom centre. */
+.phone .timebar {
+  position: static;
+  transform: none;
+  width: auto;
+  padding: 6px 8px;
+  gap: 4px;
+}
+
+.timebar-compact .timebar-row {
+  flex-wrap: nowrap;
+}
+
+.timebar-compact .btn {
+  min-width: 40px;
+  padding: 0 8px;
+}
+
+.timebar-compact .timebar-speed {
+  min-width: 58px;
+}
+
+.timebar-compact .timebar-slider {
+  flex: 1;
+  min-width: 60px;
+}
+
+.phone-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.phone-tab {
+  flex: 1;
+  min-width: 0;
+  padding: 0 4px;
+  font-size: 12.5px;
+  background: var(--glass);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+}
+
+.phone-credits {
+  font-size: 9.5px;
+  color: var(--faint);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+/* Text over the globe needs a solid background on a small screen. */
+.phone .search-results {
+  background: var(--glass-strong);
+}
+
+@media (max-width: 700px), (max-height: 500px) {
+  .about {
+    background: var(--glass-strong);
+    max-height: calc(100dvh - 2 * var(--gutter));
+  }
+  .about-body {
+    max-height: calc(100dvh - 2 * var(--gutter) - 50px);
+  }
+}
+
+/*
+  Held sideways (lower than 500 px and wider than tall): the bar, tabs and sheet stand in a
+  column on the left, the time bar sits bottom right. The scene slides the globe right.
+*/
+@media (max-height: 500px) and (orientation: landscape) {
+  .phone {
+    right: auto;
+    width: min(340px, 45vw);
+    justify-content: flex-start;
+    padding-left: max(8px, env(safe-area-inset-left));
+  }
+
+  .phone-dock {
+    flex: 1;
+  }
+
+  .phone-tabs {
+    order: -1;
+  }
+
+  .phone-sheet {
+    flex: 0 1 auto;
+    max-height: none;
+  }
+
+  .phone-credits {
+    margin-top: auto;
+  }
+
+  .phone .timebar {
+    position: fixed;
+    left: auto;
+    right: max(8px, env(safe-area-inset-right));
+    bottom: 8px;
+    width: calc(100vw - min(340px, 45vw) - 24px);
+  }
+}
