@@ -4,18 +4,25 @@
 import { useMemo, useState } from 'react';
 import { ownerName } from '../data/content';
 import type { SatData } from '../data/load';
-import { buildSearchIndex, search } from '../state/search';
+import { buildSearchIndex, search, type SearchIndex } from '../state/search';
 import { selection } from '../state/selection';
 
+const indexes = new WeakMap<SatData, SearchIndex>();
+/** The search index for the loaded data, built once and shared by every search field. */
+export function searchIndexFor(data: SatData): SearchIndex {
+  let idx = indexes.get(data);
+  if (!idx) {
+    idx = buildSearchIndex(
+      data.elements.rows.map((r) => r[0]),
+      data.catalog,
+    );
+    indexes.set(data, idx);
+  }
+  return idx;
+}
+
 export function SearchBox({ data }: { readonly data: SatData }) {
-  const index = useMemo(
-    () =>
-      buildSearchIndex(
-        data.elements.rows.map((r) => r[0]),
-        data.catalog,
-      ),
-    [data],
-  );
+  const index = searchIndexFor(data);
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const results = useMemo(() => search(index, query, 8), [index, query]);

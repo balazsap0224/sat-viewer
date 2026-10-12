@@ -9,6 +9,7 @@ import { temeToEcef } from '../src/frames';
 import { geodeticToEcef } from '../src/geodetic';
 import { isSunlit, lookAngles, lookAnglesEcef, type Observer, sunElevation } from '../src/look';
 import { findPasses } from '../src/passes';
+import { nextDarkWindow, relativeMagnitude } from '../src/skywatch';
 import { type MeanElements, propagateAt, satrecFromElements } from '../src/sgp4';
 import { sunDirectionEci } from '../src/sun';
 import { degToRad, radToDeg } from '../src/time';
@@ -62,7 +63,9 @@ describe('look angles (Vallado Alg. 27, SEZ frame)', () => {
             { latitude: lat, longitude: lon, height: 0.2 },
             { x, y, z },
           );
-          expect(ours.elRad).toBeCloseTo(theirs.elevation, 9);
+          // Compared as sin(el): near 90° asin magnifies rounding (an input error of 1e-16
+          // becomes ~1.5e-8 rad), so the angles themselves can differ by more than 1e-9.
+          expect(Math.sin(ours.elRad)).toBeCloseTo(Math.sin(theirs.elevation), 9);
           expect(ours.rangeKm).toBeCloseTo(theirs.rangeSat, 6);
           // Azimuth is undefined straight overhead; compare elsewhere, modulo 2π.
           if (Math.abs(ours.elRad) < 1.55) {
@@ -181,5 +184,29 @@ describe('pass search', () => {
       expect(p.visible.from).toBeGreaterThanOrEqual(p.rise.t);
       expect(p.visible.to).toBeLessThanOrEqual(p.set.t);
     }
+  });
+});
+
+describe('dark sky window and relative brightness (skywatch.ts)', () => {
+  const budapest: Observer = { latRad: degToRad(47.4979), lonRad: degToRad(19.0402), altKm: 0.1 };
+
+  it('[6.8] Budapest, from 12 Oct 2026 12:00 UTC: dark (Sun below −6°) from 16:32:46 to 04:28:27 UTC', () => {
+    const w = nextDarkWindow(budapest, Date.UTC(2026, 9, 12, 12), Date.UTC(2026, 9, 13, 12));
+    expect(w).not.toBeNull();
+    expect(Math.abs(w!.from - Date.UTC(2026, 9, 12, 16, 32, 46))).toBeLessThan(5000);
+    expect(Math.abs(w!.to - Date.UTC(2026, 9, 13, 4, 28, 27))).toBeLessThan(5000);
+    expect(radToDeg(sunElevation(budapest, w!.from))).toBeCloseTo(-6, 2);
+  });
+
+  it('[6.9] Longyearbyen (78.2° N) at midsummer: no dark sky at all; starting at night: the window starts at once', () => {
+    const svalbard: Observer = { latRad: degToRad(78.22), lonRad: degToRad(15.65), altKm: 0 };
+    expect(nextDarkWindow(svalbard, Date.UTC(2026, 5, 21), Date.UTC(2026, 5, 22))).toBeNull();
+    const night = Date.UTC(2026, 9, 12, 22);
+    expect(nextDarkWindow(budapest, night, night + 86_400_000)!.from).toBe(night);
+  });
+
+  it('[6.10] relative brightness: 20,000 kg at 500 km is 3.67 mag brighter than 1,000 kg at 1,000 km', () => {
+    expect(relativeMagnitude(1000, 1000)).toBeCloseTo(-5, 9);
+    expect(relativeMagnitude(20000, 500)).toBeCloseTo(-8.6735, 4);
   });
 });

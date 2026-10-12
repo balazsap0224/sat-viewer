@@ -20,6 +20,8 @@ export interface SatData {
   readonly classes: readonly OrbitClass[];
   /** NORAD number → row index */
   readonly indexOf: ReadonlyMap<number, number>;
+  /** 1 for debris fragments (content/debris-clouds.json), same order */
+  readonly debris: Uint8Array;
   readonly meta: MetaFile;
 }
 
@@ -44,6 +46,7 @@ export async function loadData(base = '/data'): Promise<SatData> {
     catalog: elements.rows.map((r) => byNorad.get(r[0])),
     classes: elements.rows.map((r) => orbitClass(r[2], r[3], r[4])),
     indexOf: new Map(elements.rows.map((r, i) => [r[0], i])),
+    debris: Uint8Array.from(elements.rows, (r) => (byNorad.get(r[0])?.debrisCloud ? 1 : 0)),
     meta,
   };
 }

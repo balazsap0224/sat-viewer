@@ -10,7 +10,9 @@ import { fileURLToPath } from 'node:url';
 import {
   catalogFileSchema,
   constellationsSchema,
+  debrisCloudsSchema,
   elementsFileSchema,
+  encountersFileSchema,
   launchSitesSchema,
   ommRecordSchema,
   ownersSchema,
@@ -21,7 +23,7 @@ import { z } from 'zod';
 import { build, parseWith } from '../src/build';
 import { checkCount, checkEpochs, SanityError } from '../src/checks';
 import { gcatIndex, parseGcatOrgs, parseGcatSatcat } from '../src/gcat';
-import { dropUnpropagatable, merge } from '../src/merge';
+import { dropUnpropagatable, merge, mergeDebris } from '../src/merge';
 import { type FetchLike, fetchSource, SourceError, USER_AGENT } from '../src/politeFetch';
 import { SOURCES } from '../src/sources';
 
@@ -139,6 +141,50 @@ describe('merge (module 2: the owner checks these records)', () => {
   });
 });
 
+describe('debris clouds (content/debris-clouds.json)', () => {
+  it('[2.6] a Fengyun-1C record becomes a DEB entry with the parent satellite owner (PRC) and launch (1999-05-10, Taiyuan)', async () => {
+    const gp = z
+      .array(ommRecordSchema)
+      .parse(JSON.parse(await fixture('gp-debris-fengyun-sample.json')));
+    const clouds = debrisCloudsSchema.parse(
+      JSON.parse(await readFile(join(contentDir, 'debris-clouds.json'), 'utf8')),
+    );
+    const base = await mergeFixtures();
+    const merged = mergeDebris(
+      base,
+      gp,
+      clouds.find((c) => c.id === 'fengyun-1c')!,
+    );
+    expect(merged.rows).toHaveLength(base.rows.length + 2);
+    const e = merged.entries.find((x) => x.norad === gp[0]!.NORAD_CAT_ID)!;
+    expect(e).toMatchObject({
+      name: gp[0]!.OBJECT_NAME,
+      cosparId: '1999-025A',
+      ownerCode: 'PRC',
+      objectType: 'DEB',
+      launchDate: '1999-05-10',
+      launchSite: 'TAISC',
+      debrisCloud: 'fengyun-1c',
+      gcat: null,
+    });
+    // Every active entry says it is not debris.
+    expect(base.entries.every((x) => x.debrisCloud === null)).toBe(true);
+  });
+
+  it('a fragment already published (same number) is skipped as a duplicate', async () => {
+    const gp = z
+      .array(ommRecordSchema)
+      .parse(JSON.parse(await fixture('gp-debris-fengyun-sample.json')));
+    const clouds = debrisCloudsSchema.parse(
+      JSON.parse(await readFile(join(contentDir, 'debris-clouds.json'), 'utf8')),
+    );
+    const once = mergeDebris(await mergeFixtures(), gp, clouds[0]!);
+    const twice = mergeDebris(once, gp, clouds[0]!);
+    expect(twice.rows).toHaveLength(once.rows.length);
+    expect(twice.skipped.filter((x) => x.reason === 'duplicate element set')).toHaveLength(2);
+  });
+});
+
 describe('validation', () => {
   it('a record with a missing field stops the job, naming the source and the field', async () => {
     const gp = JSON.parse(await fixture('gp-sample.json')) as Record<string, unknown>[];
@@ -251,13 +297,17 @@ describe('polite fetching (SPEC.md 4.3)', () => {
     await expect(readFile(join(out, 'meta.json'), 'utf8')).rejects.toThrow();
   });
 
-  it('build: a full run on the samples writes three valid files', async () => {
+  it('build: a full run on the samples writes valid files, debris included', async () => {
     const out = join(dir, 'out');
     const s = fakeServer([
       { status: 200, body: await fixture('gp-sample.json') },
       { status: 200, body: await fixture('satcat-sample.json') },
       { status: 200, body: await fixture('gcat-sample.tsv') },
       { status: 200, body: await fixture('gcat-orgs-sample.tsv') },
+      // The debris clouds, in content/debris-clouds.json order
+      { status: 200, body: await fixture('gp-debris-fengyun-sample.json') },
+      { status: 200, body: '[]' },
+      { status: 200, body: '[]' },
     ]);
     const meta = await build(
       { cacheDir: join(dir, 'cache'), contentDir, outDir: out },
@@ -265,7 +315,7 @@ describe('polite fetching (SPEC.md 4.3)', () => {
       s.impl,
       () => {},
     );
-    expect(meta.counts).toEqual({ objects: 5, withGcat: 4 });
+    expect(meta.counts).toEqual({ objects: 5, withGcat: 4, debris: 2 });
     expect(meta.sources.gp.url).toBe(SOURCES.gp.url);
     const elements = elementsFileSchema.parse(
       JSON.parse(await readFile(join(out, 'elements.json'), 'utf8')),
@@ -273,8 +323,13 @@ describe('polite fetching (SPEC.md 4.3)', () => {
     const catalog = catalogFileSchema.parse(
       JSON.parse(await readFile(join(out, 'catalog.json'), 'utf8')),
     );
-    expect(elements.rows).toHaveLength(5);
-    expect(catalog.entries).toHaveLength(5);
+    expect(elements.rows).toHaveLength(7);
+    expect(catalog.entries).toHaveLength(7);
+    // Close approaches were computed too (none under 1 km among these 7 objects).
+    expect(
+      encountersFileSchema.parse(JSON.parse(await readFile(join(out, 'encounters.json'), 'utf8')))
+        .thresholdKm,
+    ).toBe(1);
   });
 });
 

@@ -45,3 +45,26 @@ export type Constellations = z.infer<typeof constellationsSchema>;
  */
 export const objectNotesSchema = z.record(z.string().regex(/^\d+$/), z.string());
 export type ObjectNotes = z.infer<typeof objectNotesSchema>;
+
+/**
+ * content/debris-clouds.json: the debris clouds CelesTrak publishes as GP groups (SPEC.md 4.1).
+ * The fragments have no SATCAT or GCAT details of their own here; the owner, launch and story
+ * come from the parent satellite.
+ */
+export const debrisCloudsSchema = z.array(
+  z.object({
+    id: z.string().regex(/^[a-z0-9-]+$/),
+    /** CelesTrak GP group (gp.php?GROUP=…) */
+    group: z.string().regex(/^[a-z0-9-]+$/),
+    /** Parent satellite */
+    name: z.string(),
+    /** CelesTrak owner code of the parent (content/owners.json) */
+    ownerCode: z.string(),
+    /** Parent's launch, YYYY-MM-DD, and CelesTrak launch site code */
+    launchDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    launchSite: z.string(),
+    /** One or two sentences for the info card */
+    event: z.string(),
+  }),
+);
+export type DebrisClouds = z.infer<typeof debrisCloudsSchema>;

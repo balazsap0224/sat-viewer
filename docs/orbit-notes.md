@@ -66,6 +66,15 @@ three = (x, z, −y) of TEME, in Earth radii. The Earth mesh is rotated by θ ab
 - Pass: elevation above 10° [PROPOSED]. Found by 30 s steps; rise and set refined by bisection to 0.1 s; the highest point by golden-section search.
 - Earth shadow: cylinder of radius R behind the Earth (no penumbra). Sky dark enough: Sun elevation below −6°. Visible = both, sampled every 5 s during the pass. Brightness is not modelled.
 
+## Close approaches (module 6b)
+
+`core/encounters.ts`. Positions in TEME (km), velocities km/s, times Unix ms, like everything after SGP4.
+
+- **Straight-line closest approach.** With relative position dr and relative velocity dv, the distance at time τ is |dr + dv·τ|. Its square is a parabola in τ with its lowest point at τ = −(dr·dv)/|dv|²; the distance there is |dr + dv·τ|. Over ±5 s the real paths bend away from straight lines by ½·a·t² ≈ 0.12 km each (gravity a ≈ 0.0095 km/s² in LEO), so this is only the screen; the answer comes from SGP4.
+- **Why a grid.** 16,700 objects make 140 million pairs. Putting objects into cubes R km wide and comparing only neighbouring cubes leaves a few hundred thousand comparisons per step. R must cover the threshold plus the most two objects can close in on each other in half a step: 18 km/s (LEO head-on ≈ 15.5; a highly elliptical orbit at perigee against LEO ≈ 17.6) · 5 s = 90 km.
+- **Refinement.** Golden-section search on the SGP4 distance over ±10 s around the screened moment, to 1 ms. Over such a short time the distance has a single minimum when the relative speed is at least 0.5 km/s.
+- **Accuracy.** As good as the elements: about 1 km near the epoch, a few km per day away from it. A miss distance under ~1 km means "very close", not a measured value.
+
 ## Failures
 
 SGP4 reports errors (eccentricity out of range, decayed, …). The data job leaves out objects that fail at build time and lists them in `meta.json` (`skipped`); the site also checks every position and hides an object the moment SGP4 fails for it.

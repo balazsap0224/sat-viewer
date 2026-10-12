@@ -15,10 +15,11 @@ Status: ✅ done and verified · 🔎 built, waiting for owner verification · �
 
 ## Phase 2: Exploring
 
-| #   | Module                     | Status |
-| --- | -------------------------- | ------ |
-| 5   | Search, filters, info card | 🔎     |
-| 6   | Passes                     | 🔎     |
+| #   | Module                      | Status |
+| --- | --------------------------- | ------ |
+| 5   | Search, filters, info card  | 🔎     |
+| 6   | Passes                      | 🔎     |
+| 6b  | Closest meetings, watchlist | 🔎     |
 
 ## Phase 3: Publish
 

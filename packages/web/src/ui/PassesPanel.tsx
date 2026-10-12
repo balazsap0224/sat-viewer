@@ -18,7 +18,10 @@ import {
 } from '../state/observer';
 import { selection } from '../state/selection';
 import { simClock, timeWindow } from '../state/simClock';
+import type { SatData } from '../data/load';
+import { useFilters } from '../state/filters';
 import { fmtLat, fmtLon } from './format';
+import { VisibleTonight } from './VisibleTonight';
 
 /** How far ahead of the shown time to look [days], and how many passes to list */
 const LOOKAHEAD_DAYS = 3;
@@ -189,13 +192,16 @@ function PassRow({ p }: { readonly p: Pass }) {
 }
 
 export function PassesPanel({
+  data,
   satrec,
   name,
 }: {
+  readonly data: SatData;
   readonly satrec: SatRec | undefined;
   readonly name: string | undefined;
 }) {
   const observer = useObserver();
+  const chosen = useFilters().only.length > 0;
   const [editing, setEditing] = useState(false);
   const { status, locate } = useMyLocation();
   const result = usePasses(satrec, observer);
@@ -203,7 +209,9 @@ export function PassesPanel({
   return (
     <section className="pane passes" aria-label="Passes over your location">
       <div className="pane-head">
-        <h2 className="pane-title">Passes over you</h2>
+        <h2 className="pane-title">
+          {satrec || chosen ? 'Passes over you' : 'Visible from your location'}
+        </h2>
       </div>
       <div className="pane-section">
         {editing ? (
@@ -228,7 +236,13 @@ export function PassesPanel({
       {observer && !editing && (
         <div className="pane-section scroll passes-body">
           {!satrec ? (
-            <p className="small muted">Select a satellite to see when it passes over you.</p>
+            <VisibleTonight
+              data={data}
+              location={observer}
+              timeFmt={timeFmt}
+              dayFmt={dayFmt}
+              compass={compass}
+            />
           ) : !result ? null : result.passes.length === 0 ? (
             <p className="small muted">
               {name} does not rise above 10° here in the next {LOOKAHEAD_DAYS} days.

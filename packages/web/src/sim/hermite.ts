@@ -14,30 +14,10 @@
 //
 // With u = (t − tA) / h in [0, 1] and h = tB − tA:
 //   p(u) = (2u³ − 3u² + 1)·pA + (u³ − 2u² + u)·h·vA + (−2u³ + 3u²)·pB + (u³ − u²)·h·vB
-// The same formula is in the vertex shader of SatellitePoints.tsx.
+// The same formula is in the vertex shader of SatellitePoints.tsx; the functions themselves
+// are in packages/core (hermite.ts), shared with the close-approach screening.
 
 /** Shown time between two SGP4 samples [s] */
 export const SAMPLE_STEP_S = 240;
 
-/** The four Hermite basis weights at u ∈ [0, 1]. */
-export function hermiteWeights(u: number): readonly [number, number, number, number] {
-  const u2 = u * u;
-  const u3 = u2 * u;
-  return [2 * u3 - 3 * u2 + 1, u3 - 2 * u2 + u, -2 * u3 + 3 * u2, u3 - u2];
-}
-
-/**
- * One coordinate between two samples: positions pA, pB, velocities vA, vB (per second),
- * h seconds apart, at fraction u.
- */
-export function hermite(
-  pA: number,
-  vA: number,
-  pB: number,
-  vB: number,
-  h: number,
-  u: number,
-): number {
-  const [a, b, c, d] = hermiteWeights(u);
-  return a * pA + b * h * vA + c * pB + d * h * vB;
-}
+export { hermite, hermiteWeights } from '@sat-viewer/core';

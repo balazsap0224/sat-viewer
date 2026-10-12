@@ -82,6 +82,7 @@ With Cloudflare Pages, the scheduled GitHub Actions job builds the data and depl
 - **Format: OMM JSON, not TLE.** CelesTrak ran out of 5-digit catalog numbers on 2026-07-11. Objects launched since then have 6-digit numbers (100000+) and **are not available as TLEs at all**. OMM (Orbit Mean-Elements Message) has the same content as a TLE in named fields (`EPOCH`, `MEAN_MOTION`, `ECCENTRICITY`, `INCLINATION`, `RA_OF_ASC_NODE`, `ARG_OF_PERICENTER`, `MEAN_ANOMALY`, `BSTAR`, …) without the width limits.
 - CelesTrak checks for new data every **2 hours**. A repeat download of the same data before the next update is answered with **HTTP 403**, and an IP that collects 50 errors (301/403/404) in 2 hours is blocked at the firewall.
 - Each object's elements are typically refreshed once or a few times a day.
+- **Debris** (owner, 2026-10-12): CelesTrak publishes GP groups for only three debris clouds, `fengyun-1c-debris`, `iridium-33-debris` and `cosmos-2251-debris` (about 2,700 objects). The data job fetches each like the active group (one request per run, same refresh). Owner, launch and story come from `content/debris-clouds.json`, not SATCAT or GCAT. Other debris, rocket bodies and dead satellites are only on Space-Track (not used), so they stay out.
 
 ### 4.2 Metadata
 
@@ -101,7 +102,7 @@ Owner codes (`US`, `PRC`, `CIS`, `ESA`, `ITSO`…) are translated to readable na
 - GitHub disables scheduled workflows in a public repo after 60 days without commits. The About page shows the data age, and the job's failure email tells the owner; re-enable the workflow if that happens.
 - Every request sends a `User-Agent` naming the project and a contact address.
 - The job keeps the last good files. On any HTTP error it **stops, keeps the old data, and fails the workflow run** (so the owner gets an email). It never retries in a loop.
-- Sanity checks before publishing: object count within ±10% of the previous run, every record passes the zod schema, no epoch more than 3 days in the future (some high orbits are fitted with an epoch up to about a day ahead; docs/decisions.md).
+- Sanity checks before publishing: object count within ±10% of the previous run (active satellites and debris counted separately), every record passes the zod schema, no epoch more than 3 days in the future (some high orbits are fitted with an epoch up to about a day ahead; docs/decisions.md).
 
 ### 4.4 Attribution
 
@@ -172,6 +173,13 @@ Generated data (not committed to git; built by the job and deployed with the sit
 - Look angles for a hand-worked observer/satellite pair; a pass found by the search matches an independent tracker (for example Heavens-Above) to within a minute.
 - **End check:** the ISS's sub-satellite point at a chosen moment matches an independent tracker to within about 10 km.
 
+### 6.6 Close approaches (module 6b)
+
+- Every object sampled with SGP4 every 240 s; positions and velocities in between every 10 s by cubic Hermite interpolation (error < 0.1 km).
+- At each 10 s step, a spatial grid (cubes of R = threshold + 18 km/s · 5 s + 1 km) finds the pairs that could come within the threshold during the step; straight-line relative motion gives each pair's closest moment in the step.
+- Candidates are refined with SGP4 by golden-section search to 1 ms: time of closest approach, miss distance, relative speed.
+- Checked against a brute-force scan of every pair every second (test 6b.4).
+
 ---
 
 ## 7. Front end
@@ -186,10 +194,14 @@ Generated data (not committed to git; built by the job and deployed with the sit
 ### 7.2 Panels
 
 - **Search** (name, NORAD number, international designator) with instant results.
-- **Filters:** owner, orbit class, launch year range, constellation. A counter shows "N of M objects".
+- **Space debris** (owner, 2026-10-12): the three CelesTrak debris clouds, drawn grey, **off by default**; a switch in the filters shows them (`debris=1` in the link). Fragments never count as "visible" candidates (far too small to see), and their meetings with satellites appear only while debris is shown; debris-to-debris approaches are not computed.
+- **Filters:** owner, orbit class, launch year range, constellation, altitude range (the whole orbit, perigee to apogee, inside it) and inclination range. A list of chosen satellites ("show only these", also from the info card's "Show only this") overrides the other filters while it is not empty. A counter shows "N of M objects". **[PROPOSED]** The filters sit at the right, under the info card.
 - **Info card** (section 1, item 4), with links to the CelesTrak and Wikipedia pages where they exist.
 - **Time bar:** now / play / pause, speed (1x to 1,000x **[PROPOSED]**), slider ±7 days.
-- **My location:** browser geolocation or typed coordinates (remembered in the visitor's browser only); next passes of the selected satellite with visibility (**[PROPOSED]** up to 8 passes in the 3 days after the shown time; clicking a pass jumps there and follows the satellite).
+- **My location:** browser geolocation or typed coordinates (remembered in the visitor's browser only); next passes of the selected satellite with visibility (**[PROPOSED]** up to 8 passes in the 3 days after the shown time; clicking a pass jumps there and follows the satellite). With a location but no satellite selected: the satellites most likely to be seen in the next dark-sky window (Sun below −6°, within 24 h), with when each is visible (**[PROPOSED]** the 10 best among the 150 heaviest LEO satellites, ranked by a size-and-distance proxy, since there are no magnitudes; clicking one selects it, jumps there and follows it).
+- **Closest meetings** (owner, 2026-10-12): a collapsible panel listing the closest approaches between satellites in the 24 hours after the shown time, closest first, with time, miss distance and relative speed. Computed by the data job from the published elements (core `encounters.ts`, section 6.6), **[PROPOSED]** 48 hours from the element download, approaches under 1 km, pairs moving slower than 0.5 km/s relative to each other left out; meetings within one constellation hidden unless switched on. Follows the filters (listed when either satellite passes). Clicking one shows both satellites with a line and their live distance. Labelled approximate (orbit data good to about 1 km), never a collision warning.
+- **Watchlist** (owner, 2026-10-12): "☆ Watch" on the info card adds a satellite; a collapsible panel lists them, remembered in the visitor's browser only. "Show only these" puts them into the chosen list, which also turns the passes panel into their pass timetable.
+- **Passes follow the filters** (owner, 2026-10-12): with a chosen list, every pass of those satellites in the next 24 hours; with other filters, the likeliest-visible among the matching satellites (**[PROPOSED]** at most 300 searched, heaviest first).
 - **About the data:** sources, licences, when the data was last refreshed, hidden objects.
 - The URL encodes the selected satellite and filters, so a link like `…/#sat=25544` can be shared.
 
@@ -220,6 +232,7 @@ Same working method as the game: one module at a time, the owner checks each one
 | --- | -------------------------- | --------------------------------------------------------------------------------- | ---------------------------------- |
 | 5   | Search, filters, info card | Panels from 7.2 except passes; orbit line, ground track, footprint; shareable URL | Visual + info card content         |
 | 6   | Passes                     | Look angles, pass search, visibility                                              | Reference values; vs Heavens-Above |
+| 6b  | Closest meetings           | Close-approach screening in the data job; panel and pair view; watchlist          | Reference values; vs SOCRATES      |
 
 ### Phase 3: Publish
 
@@ -229,7 +242,7 @@ Same working method as the game: one module at a time, the owner checks each one
 
 ### Later (only if wanted)
 
-Rocket bodies, debris and dead satellites (with a type filter); Hungarian translation; statistics pages (satellites by country, by year, launches per year); decayed and historical objects; Wikipedia photos; close-approach data (CelesTrak SOCRATES); 3D models for a few famous satellites; mobile layout; a "real satellites" layer inside the game.
+Rocket bodies, other debris and dead satellites (need Space-Track); Hungarian translation; statistics pages (satellites by country, by year, launches per year); decayed and historical objects; Wikipedia photos; 3D models for a few famous satellites; mobile layout; a "real satellites" layer inside the game.
 
 ---
 

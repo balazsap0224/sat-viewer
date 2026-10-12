@@ -72,6 +72,8 @@ export const catalogEntrySchema = z.object({
   launchSite: z.string().nullable(),
   /** Constellation id (content/constellations.json), if any */
   constellation: z.string().nullable(),
+  /** Debris cloud id (content/debris-clouds.json) for debris fragments, else null */
+  debrisCloud: z.string().nullable().default(null),
   /** From GCAT, where known */
   gcat: z
     .object({
@@ -112,6 +114,8 @@ export const metaFileSchema = z.object({
     objects: z.number().int().nonnegative(),
     /** Of those, with GCAT details */
     withGcat: z.number().int().nonnegative(),
+    /** Debris fragments published besides the active satellites (not part of `objects`) */
+    debris: z.number().int().nonnegative().default(0),
   }),
   /** Objects left out, and why (shown on the About page) */
   skipped: z.array(z.object({ norad: z.number().int(), name: z.string(), reason: z.string() })),
@@ -122,3 +126,30 @@ export const metaFileSchema = z.object({
   unknownCodes: z.object({ owners: z.array(z.string()), launchSites: z.array(z.string()) }),
 });
 export type MetaFile = z.infer<typeof metaFileSchema>;
+
+/** Close approaches between published objects (core/encounters.ts, data-job/encounters.ts). */
+export const encounterRowSchema = z.tuple([
+  /** NORAD numbers of the two objects, a < b */
+  z.number().int().positive(),
+  z.number().int().positive(),
+  /** Time of closest approach (Unix ms) */
+  z.number().int(),
+  /** Miss distance [km] */
+  z.number().nonnegative(),
+  /** Relative speed at closest approach [km/s] */
+  z.number().nonnegative(),
+]);
+export type EncounterRow = z.infer<typeof encounterRowSchema>;
+
+export const encountersFileSchema = z.object({
+  version: z.literal(DATA_FORMAT_VERSION),
+  computedAt: z.string(),
+  /** The screened time span (ISO 8601 UTC) */
+  from: z.string(),
+  to: z.string(),
+  thresholdKm: z.number().positive(),
+  minRelSpeedKmS: z.number().nonnegative(),
+  /** Closest first */
+  rows: z.array(encounterRowSchema),
+});
+export type EncountersFile = z.infer<typeof encountersFileSchema>;

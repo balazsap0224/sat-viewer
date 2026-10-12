@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "web": "pnpm --filter @sat-viewer/web dev",
-    "data": "pnpm --filter @sat-viewer/data-job start"
+    "data": "pnpm --filter @sat-viewer/data-job start",
+    "encounters": "pnpm --filter @sat-viewer/data-job encounters"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

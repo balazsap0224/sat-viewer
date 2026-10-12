@@ -3,11 +3,13 @@
 
 import {
   constellationsSchema,
+  debrisCloudsSchema,
   launchSitesSchema,
   objectNotesSchema,
   ownersSchema,
 } from '@sat-viewer/shared';
 import constellationsJson from '../../../../content/constellations.json';
+import debrisCloudsJson from '../../../../content/debris-clouds.json';
 import launchSitesJson from '../../../../content/launch-sites.json';
 import objectNotesJson from '../../../../content/object-notes.json';
 import ownersJson from '../../../../content/owners.json';
@@ -16,6 +18,7 @@ export const OWNERS = ownersSchema.parse(ownersJson);
 export const LAUNCH_SITES = launchSitesSchema.parse(launchSitesJson);
 export const CONSTELLATIONS = constellationsSchema.parse(constellationsJson);
 export const OBJECT_NOTES = objectNotesSchema.parse(objectNotesJson);
+export const DEBRIS_CLOUDS = debrisCloudsSchema.parse(debrisCloudsJson);
 
 /** Readable owner name, or the bare CelesTrak code when content/owners.json lacks it. */
 export const ownerName = (code: string): string => OWNERS[code]?.name ?? code;

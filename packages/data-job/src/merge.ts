@@ -8,6 +8,7 @@
 import type {
   CatalogEntry,
   Constellations,
+  DebrisClouds,
   ElementRow,
   LaunchSites,
   OmmRecord,
@@ -106,6 +107,7 @@ export function merge(input: MergeInput): MergeResult {
       launchDate: orNull(sc.LAUNCH_DATE),
       launchSite: site,
       constellation: constellationOf(gp.OBJECT_NAME, input.constellations),
+      debrisCloud: null,
       gcat: g
         ? {
             operator: org(g.owner),
@@ -183,4 +185,54 @@ export function dropUnpropagatable(result: MergeResult, t: number): MergeResult 
       ...[...failed].map(([norad, reason]) => ({ norad, name: names.get(norad) ?? '', reason })),
     ],
   };
+}
+
+/**
+ * Adds one debris cloud's fragments (its CelesTrak GP group) to a merge result. Fragments have
+ * no SATCAT or GCAT details here: owner and launch are the parent's (content/debris-clouds.json),
+ * the type is "DEB". Objects already published (the same number in another group) are skipped.
+ */
+export function mergeDebris(
+  result: MergeResult,
+  gp: readonly OmmRecord[],
+  cloud: DebrisClouds[number],
+): MergeResult {
+  const seen = new Set(result.rows.map((r) => r[0]));
+  const rows = [...result.rows];
+  const entries = [...result.entries];
+  const skipped = [...result.skipped];
+  for (const g of gp) {
+    if (seen.has(g.NORAD_CAT_ID)) {
+      skipped.push({ norad: g.NORAD_CAT_ID, name: g.OBJECT_NAME, reason: 'duplicate element set' });
+      continue;
+    }
+    seen.add(g.NORAD_CAT_ID);
+    rows.push([
+      g.NORAD_CAT_ID,
+      g.EPOCH,
+      g.MEAN_MOTION,
+      g.ECCENTRICITY,
+      g.INCLINATION,
+      g.RA_OF_ASC_NODE,
+      g.ARG_OF_PERICENTER,
+      g.MEAN_ANOMALY,
+      g.BSTAR,
+      g.MEAN_MOTION_DOT,
+      g.MEAN_MOTION_DDOT,
+    ]);
+    entries.push({
+      norad: g.NORAD_CAT_ID,
+      name: g.OBJECT_NAME,
+      cosparId: g.OBJECT_ID,
+      ownerCode: cloud.ownerCode,
+      objectType: 'DEB',
+      opsStatus: null,
+      launchDate: cloud.launchDate,
+      launchSite: cloud.launchSite,
+      constellation: null,
+      debrisCloud: cloud.id,
+      gcat: null,
+    });
+  }
+  return { ...result, rows, entries, skipped };
 }

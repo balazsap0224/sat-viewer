@@ -59,6 +59,10 @@ Known limits:
 | 6.6 | ISS passes over Budapest (47.4979° N, 19.0402° E), 11–13 October 2026: same passes as a scan every 1 s; rise/set within 1.5 s, highest point within 0.01°; rise and set at 10.00° | The scan finds each crossing to its 1 s step; the search uses 30 s steps then bisection                                                                                                                                                                                                                                                        | brute force                            |     |
 | 6.7 | ASTRA 1KR (GEO, 19.0° E) from Budapest: up all the time, elevation ≈ 35.6°                                                                                                        | Satellite at nearly the observer's longitude: central angle γ ≈ 47.3° (geocentric latitude). tan El = (cos γ − R/r) / sin γ = (0.6782 − 0.1513) / 0.7349 = 0.717 → 35.6°. The test allows 34–36.5°                                                                                                                                             | geometry; SES's elevation tables       |     |
 
+| 6.8 | Budapest (47.4979° N, 19.0402° E), starting 12 Oct 2026 12:00 UTC: dark sky (Sun below −6°) from 16:32:46 to 04:28:27 UTC (18:32–06:28 CEST) | Sun elevation from `sunElevation` (module 1 Sun direction), crossings stepped every 5 min and bisected to 1 s. Independent check: the NOAA solar-position formulas (Meeus), scanned every second, give 16:32:47 and 04:28:29 | NOAA solar calculator; timeanddate.com "civil twilight" for Budapest | |
+| 6.9 | Longyearbyen (78.22° N) on 21 June 2026: no dark sky at all; starting while it is dark, the window starts at once | At local midnight the Sun is lowest: elevation = φ + δ − 90° = 78.22° + 23.44° − 90° = +11.66°, still above the horizon, so it never reaches −6° | geometry | |
+| 6.10 | Relative brightness: 1,000 kg at 1,000 km gives −5.000; 20,000 kg at 500 km gives −8.6735, i.e. 3.67 mag brighter | m = −2.5 log10(m^(2/3)) + 5 log10(r/1000). 1,000 kg: −2.5 · (2/3) · 3 + 0 = −5. 20,000 kg: −2.5 · (2/3) · 4.30103 + 5 · (−0.30103) = −7.16838 − 1.50515 = −8.67353 | definition (skywatch.ts); a ranking proxy, not a magnitude | |
+
 Also tested: our look angles agree with satellite.js's `ecfToLookAngles` (an independent implementation of the same frame) to 1e-9 rad for random observers and satellites; a pass's visible part lies inside the pass; compass points; typed coordinates.
 
 ### Compare with Heavens-Above (SPEC.md 6.5: within a minute)
@@ -92,3 +96,67 @@ Known limits:
 - No brightness (magnitude) model: "Visible" means sunlit in a dark sky; faint satellites are marked too.
 - Passes shorter than 30 s above 10° can be missed (very low grazes).
 - "Use my location" needs the browser's permission; on `http://` other than localhost browsers refuse it (the hosted site will be https).
+
+### Added 2026-10-12 (owner's review requests)
+
+- **Bottom-left overlap fixed:** the legend now sits at the bottom of the left column; the filters and passes shrink and scroll instead of covering it. Checked in Edge at 1400 × 850 and 1280 × 680 with the filters open (no overlap).
+- **"Visible from your location"** (location set, no satellite selected): the dark-sky window and the 10 likeliest visible satellites with their visible times. In Edge (Budapest, shown time 12 Oct 10:25 UTC) it listed dark sky 18:32–06:28 and, among others, ISS (ZARYA) 06:26–06:28, the same visible part as the ISS table above. The search took about 1 s. Clicking a row selected the satellite, jumped to 30 s before its visible start and followed it.
+
+| Check                                                                                             | ✓   |
+| ------------------------------------------------------------------------------------------------- | --- |
+| The list looks sensible for your location tonight; go out and spot one or two at the listed times |     |
+
+- **Layout:** filters moved to the right, under a shorter info card. Checked in Edge at 1400 × 850 and 1100 × 760: no input runs past the panel edge, and the right column stays clear of the time bar.
+- **Orbit filters and "show only":** in Edge, "Show only this" on the ISS gave "1 of 16,701 objects" and `#sat=25544&only=25544`; adding Tianhe from the filter list gave 2. Altitude 500–600 km gave 1,563 objects; adding inclination 97–99° gave 892. (Most Starlinks now fly at 460–500 km, so few are in 500–600.) Clear filters emptied the fields.
+
+| Check                                                                                  | ✓   |
+| -------------------------------------------------------------------------------------- | --- |
+| Altitude and inclination filters give sensible sets (e.g. 35,700–35,900 km = GEO belt) |     |
+| "Show only this", adding and removing satellites, and a shared `only=` link work       |     |
+
+## Module 6b: closest meetings (`packages/core/test/module6b.test.ts`)
+
+Added 2026-10-12 at the owner's request (own calculation, before the Phase 2 sign-off). **PENDING OWNER VERIFICATION.**
+
+### Reference values
+
+| Id   | Value                                                                                                                                                                                                                                                                         | Formula / working                                                                      | Source            | ✓                                                                                                                                 |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 6b.1 | dr = (10, 0, 0) km, dv = (−1, 1, 0) km/s: closest after τ = 5 s, distance 7.0711 km                                                                                                                                                                                           | τ = −(dr·dv)/                                                                          | dv                | ² = −(10·(−1) + 0 + 0)/(1 + 1) = 5 s. dr + dv·τ = (10 − 5, 5, 0) = (5, 5, 0);                                                     | (5, 5, 0)    | = √50 = 7.0711 km | vector algebra |     |
+| 6b.2 | The same with τ limited to ±2 s: τ = 2 s, distance √68 = 8.2462 km                                                                                                                                                                                                            | dr + 2·dv = (8, 2, 0); √(64 + 4) = √68                                                 | same              |                                                                                                                                   |
+| 6b.3 | Equatorial and polar circular orbits at 500 km, both at the ascending node at the epoch: they meet within 5 s of the epoch (measured +0.98 s), relative speed 10.6–10.9 km/s (measured 10.772), miss under 30 km (measured 12.4 km)                                           | v = √(μ/r) = √(398600.4418 / 6878.137) = 7.6126 km/s. The velocities are 90° apart, so | v₁ − v₂           | = v·√2 = 10.766 km/s. They do not meet at exactly 0 km: SGP4 adds short-period J2 terms that differ with inclination (here 12 km) | Kepler; SGP4 |                   |
+| 6b.4 | 30 random LEO orbits in one 20 km shell, 3 hours, threshold 50 km: the screening finds exactly the same 11 approaches as a scan of every pair every second (each minimum refined by a 1 ms scan); times within 50 ms, miss distances within 5 m, relative speeds within 1 m/s | brute force                                                                            | independent check |                                                                                                                                   |
+
+Also tested: two satellites 0.01° apart in the same orbit (≈ 1.2 km, all the time) are not reported (relative speed below 0.5 km/s).
+
+### First run on the live data (elements of 2026-10-11 11:51 UTC, 48 hours)
+
+- 9,335 approaches under 1 km between active satellites, in 240 s (one core). 8,425 of them are Starlink against Starlink; the panel hides meetings within one constellation by default.
+- Closest across constellations, e.g. STARLINK-3867 ↔ FLOCK 4G-2 on 13 Oct 05:37:07 UTC, < 0.1 km at 14.6 km/s.
+- In Edge: clicking that row selected the pair, jumped to a minute before, and followed; the line's label read 839 km a minute before and 41 km about 3 s after the closest moment (14.6 km/s × 2.8 s ≈ 41 km).
+
+**How to compare (optional):** CelesTrak SOCRATES lists close approaches computed from the same kind of data (SGP4). A pair of two active satellites that appears in both lists should agree within about a minute and a few hundred metres; SOCRATES also includes debris, which we do not have.
+
+| Check                                                                                         | ✓   |
+| --------------------------------------------------------------------------------------------- | --- |
+| Closest meetings panel: list, constellation switch, clicking a meeting (pair, line, distance) |     |
+| Watchlist: ☆ Watch on a few satellites, Show only these, their passes; kept after reload      |     |
+| Passes follow the filters: chosen list (timetable) and e.g. owner = China (likeliest visible) |     |
+
+## Space debris (added 2026-10-12)
+
+First live run with debris (2026-10-12 11:48 UTC): Fengyun-1C 1,977 objects, Iridium 33 109, Cosmos 2251 588 (CelesTrak GP groups; the Fengyun-1C group also holds the remaining main body, 1999-025A).
+
+**Please check `content/debris-clouds.json`** (hand-written, like the other content tables):
+
+| Cloud       | Parent launch     | Site             | Owner | Event                                           | ✓   |
+| ----------- | ----------------- | ---------------- | ----- | ----------------------------------------------- | --- |
+| Fengyun-1C  | 10 May 1999       | Taiyuan (TAISC)  | PRC   | Destroyed by China's ASAT test, 11 January 2007 |     |
+| Iridium 33  | 14 September 1997 | Baikonur (TYMSC) | US    | Collided with Cosmos 2251, 10 February 2009     |     |
+| Cosmos 2251 | 16 June 1993      | Plesetsk (PLMSC) | CIS   | Collided with Iridium 33, 10 February 2009      |     |
+
+Tested (`dataJob.test.ts`, `state.test.ts`): a Fengyun-1C record becomes a DEB entry with the parent's owner and launch; duplicates are skipped; debris is hidden until switched on, and a chosen fragment always shows; a full run on the samples writes elements, catalog, meta (with the debris count) and encounters.
+
+| Check                                                                                                                                               | ✓   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| "Show space debris" in Filters: grey points appear (Fengyun-1C's cloud around 800 km, polar); a fragment's info card names the parent and the event |     |

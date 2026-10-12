@@ -1,5 +1,8 @@
 // Which satellite is selected (info card, orbit line) and hovered (tooltip), and whether the
 // camera follows the selected one. Objects are identified by NORAD number.
+//
+// A "companion" is a second satellite shown with the selected one: the other party of a close
+// approach picked in the "Closest meetings" panel (ring, label and a line with the distance).
 
 import { useSyncExternalStore } from 'react';
 
@@ -7,9 +10,11 @@ export interface SelectionState {
   readonly selected: number | null;
   /** The camera follows the selected satellite */
   readonly focused: boolean;
+  /** A second satellite shown with the selected one (a close approach), or null */
+  readonly companion: number | null;
 }
 
-let state: SelectionState = { selected: null, focused: false };
+let state: SelectionState = { selected: null, focused: false, companion: null };
 const listeners = new Set<() => void>();
 
 function set(next: SelectionState) {
@@ -26,7 +31,11 @@ export const selection = {
   /** Selects a satellite (null clears). Following stops when nothing is selected. */
   select(norad: number | null) {
     if (norad === state.selected) return;
-    set({ selected: norad, focused: norad !== null && state.focused });
+    set({ selected: norad, focused: norad !== null && state.focused, companion: null });
+  },
+  /** Selects `norad` and shows `companion` with it (a close approach). */
+  selectPair(norad: number, companion: number) {
+    set({ selected: norad, focused: state.focused, companion });
   },
   setFocused(focused: boolean) {
     set({ ...state, focused: focused && state.selected !== null });

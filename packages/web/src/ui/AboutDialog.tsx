@@ -35,8 +35,10 @@ export function AboutDialog({
         <p>
           SatViewer shows every <strong>active satellite</strong> in CelesTrak&apos;s catalog (
           {fmtInt(meta.counts.objects)} objects), computed in your browser with the SGP4 model from
-          their published orbital elements. Debris, rocket bodies and dead satellites are not shown
-          yet.
+          their published orbital elements. It can also show the debris of three destroyed
+          satellites that CelesTrak publishes ({fmtInt(meta.counts.debris)} pieces, off by default).
+          Other debris, rocket bodies and dead satellites are not shown: their orbits are only
+          available from Space-Track.
         </p>
 
         <h3 className="info-h">Sources</h3>

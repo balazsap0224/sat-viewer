@@ -81,9 +81,14 @@ export interface SatellitePointsProps {
   readonly classes: readonly OrbitClass[];
   /** 1 = passes the filters, 0 = hidden */
   readonly mask: Uint8Array;
+  /** 1 = debris fragment: drawn in DEBRIS_COLOR whatever its orbit class */
+  readonly debris: Uint8Array;
 }
 
-export function SatellitePoints({ rows, classes, mask }: SatellitePointsProps) {
+/** Debris colour (also used by the legend) */
+export const DEBRIS_COLOR = '#8d939c';
+
+export function SatellitePoints({ rows, classes, mask, debris }: SatellitePointsProps) {
   const n = rows.length;
 
   const geometry = useMemo(() => {
@@ -99,12 +104,12 @@ export function SatellitePoints({ rows, classes, mask }: SatellitePointsProps) {
     const colors = new Float32Array(3 * n);
     const c = new Color();
     classes.forEach((cls, i) => {
-      c.set(ORBIT_CLASS_COLORS[cls]);
+      c.set(debris[i] ? DEBRIS_COLOR : ORBIT_CLASS_COLORS[cls]);
       colors.set([c.r, c.g, c.b], 3 * i);
     });
     g.setAttribute('color', new BufferAttribute(colors, 3));
     return g;
-  }, [classes, n]);
+  }, [classes, debris, n]);
 
   const material = useMemo(
     () =>

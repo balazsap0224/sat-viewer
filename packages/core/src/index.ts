@@ -10,3 +10,6 @@ export * from './footprint';
 export * from './track';
 export * from './look';
 export * from './passes';
+export * from './skywatch';
+export * from './hermite';
+export * from './encounters';

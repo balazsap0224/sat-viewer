@@ -16,9 +16,11 @@ import {
 import type { CatalogEntry, ElementRow } from '@sat-viewer/shared';
 import { useEffect, useState } from 'react';
 import { LAUNCH_SITES, OBJECT_NOTES, ownerName } from '../data/content';
-import { CONSTELLATIONS } from '../data/content';
+import { CONSTELLATIONS, DEBRIS_CLOUDS } from '../data/content';
 import { ORBIT_CLASS_COLORS } from '../scene/SatellitePoints';
+import { filtersStore, useFilters } from '../state/filters';
 import { selection, useSelection } from '../state/selection';
+import { useWatchlist, watchlist } from '../state/watchlist';
 import { simClock } from '../state/simClock';
 import { CLASS_NAMES } from './StatusCorner';
 import { fmtAgeDays, fmtDate, fmtInt, fmtLat, fmtLon, OPS_STATUS, yearsSince } from './format';
@@ -36,6 +38,51 @@ function useTicker(ms: number): number {
     return () => clearInterval(id);
   }, [ms]);
   return t;
+}
+
+/**
+ * Hides every other satellite ("show only these" filter, state/filters.ts). With a list
+ * already chosen, it adds this one to the list or takes it off again.
+ */
+function ShowOnlyButton({ norad }: { readonly norad: number }) {
+  const { only } = useFilters();
+  if (only.length === 0)
+    return (
+      <button className="btn btn-small" onClick={() => filtersStore.addOnly(norad)}>
+        Show only this
+      </button>
+    );
+  if (!only.includes(norad))
+    return (
+      <button className="btn btn-small" onClick={() => filtersStore.addOnly(norad)}>
+        Add to shown
+      </button>
+    );
+  return (
+    <button
+      className="btn btn-small btn-active"
+      aria-pressed
+      onClick={() => filtersStore.removeOnly(norad)}
+      title={only.length === 1 ? 'Show all satellites again' : 'Take it off the shown list'}
+    >
+      {only.length === 1 ? 'Show all' : 'Remove from shown'}
+    </button>
+  );
+}
+
+/** Adds the satellite to the visitor's watchlist or takes it off (state/watchlist.ts). */
+function WatchButton({ norad }: { readonly norad: number }) {
+  const watching = useWatchlist().includes(norad);
+  return (
+    <button
+      className={`btn btn-small ${watching ? 'btn-active' : ''}`}
+      aria-pressed={watching}
+      title={watching ? 'Remove from your watchlist' : 'Add to your watchlist'}
+      onClick={() => watchlist.toggle(norad)}
+    >
+      {watching ? '★ Watching' : '☆ Watch'}
+    </button>
+  );
 }
 
 export interface InfoCardProps {
@@ -64,6 +111,7 @@ export function InfoCard({ row, entry, cls, satrec }: InfoCardProps) {
   const age = yearsSince(entry?.launchDate ?? null, Date.now());
   const constellation = CONSTELLATIONS.find((c) => c.id === entry?.constellation);
   const note = OBJECT_NOTES[String(norad)];
+  const cloud = DEBRIS_CLOUDS.find((c) => c.id === entry?.debrisCloud);
 
   return (
     <section className="pane info-card" aria-label={`About ${name}`}>
@@ -154,6 +202,12 @@ export function InfoCard({ row, entry, cls, satrec }: InfoCardProps) {
           )}
         </dl>
         {note && <p className="small muted info-note">{note}</p>}
+        {cloud && (
+          <p className="small muted info-note">
+            A fragment of <strong>{cloud.name}</strong>. {cloud.event} Owner and launch above are
+            the parent satellite&apos;s.
+          </p>
+        )}
 
         <h3 className="info-h">Orbit</h3>
         <dl className="kv num">
@@ -201,6 +255,8 @@ export function InfoCard({ row, entry, cls, satrec }: InfoCardProps) {
         >
           {focused ? 'Stop following' : 'Follow'}
         </button>
+        <ShowOnlyButton norad={norad} />
+        <WatchButton norad={norad} />
         <a className="btn btn-small" href={celestrakUrl(norad)} target="_blank" rel="noreferrer">
           CelesTrak
         </a>

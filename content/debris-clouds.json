@@ -1,0 +1,29 @@
+[
+  {
+    "id": "fengyun-1c",
+    "group": "fengyun-1c-debris",
+    "name": "Fengyun-1C",
+    "ownerCode": "PRC",
+    "launchDate": "1999-05-10",
+    "launchSite": "TAISC",
+    "event": "Chinese weather satellite destroyed by China's anti-satellite missile test on 11 January 2007; the largest debris cloud ever recorded."
+  },
+  {
+    "id": "iridium-33",
+    "group": "iridium-33-debris",
+    "name": "Iridium 33",
+    "ownerCode": "US",
+    "launchDate": "1997-09-14",
+    "launchSite": "TYMSC",
+    "event": "Working Iridium communications satellite, destroyed on 10 February 2009 in the first accidental collision between two satellites, with the dead Cosmos 2251."
+  },
+  {
+    "id": "cosmos-2251",
+    "group": "cosmos-2251-debris",
+    "name": "Cosmos 2251",
+    "ownerCode": "CIS",
+    "launchDate": "1993-06-16",
+    "launchSite": "PLMSC",
+    "event": "Retired Russian military communications satellite, destroyed on 10 February 2009 when it collided with Iridium 33."
+  }
+]

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node --import tsx src/main.ts",
+    "encounters": "node --import tsx src/encountersMain.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
