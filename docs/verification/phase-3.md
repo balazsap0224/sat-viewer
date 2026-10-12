@@ -36,6 +36,9 @@ Closest-meetings screening: 3 min on the owner's desktop; the workflow allows 45
 camera comes close enough for the difference to show (`textureDetail.ts`: about 3 Earth radii
 from the centre on a 1080-px-tall screen, 5 on a high-density one). First load is now about
 3.1 MB in all (data + code 1.73 MB, textures 1.35 MB).
+Bug found by the owner the same evening and fixed: once zoomed in, the sharp textures were sent
+to the GPU before being marked sRGB, so the Earth looked washed out and the night side lavender.
+They are now marked during render, before drei uploads them (`Earth.tsx`, `SharpTextures`).
 
 **Actions minutes:** a deploy run takes about 5 min (owner, 2026-10-12): 4 a day is about
 600 of the private repo's 2,000 free minutes a month, plus pushes and CI.

@@ -106,9 +106,12 @@ export function Earth() {
 /** Downloads the sharp textures, puts them into the materials and frees the small ones. */
 function SharpTextures({ materials, small }: { materials: EarthMaterials; small: EarthMaps }) {
   const sharp = useTexture(SHARP_TEXTURES);
+  // Mark them as sRGB during render: drei sends new textures to the GPU in an effect, and an
+  // upload made before the colour space is set would read them as linear, so the Earth would
+  // come out washed out and the night side lavender instead of dark (found 2026-10-12).
+  useMemo(() => prepare(sharp), [sharp]);
 
   useEffect(() => {
-    prepare(sharp);
     materials.west.uniforms.dayMap!.value = sharp.dayWest;
     materials.west.uniforms.nightMap!.value = sharp.nightWest;
     materials.east.uniforms.dayMap!.value = sharp.dayEast;
