@@ -4,3 +4,4 @@ packages/web/public/data/
 .data-cache/
 packages/core/test/fixtures/
 packages/data-job/test/fixtures/
+e2e/fixtures/

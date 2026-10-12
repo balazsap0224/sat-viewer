@@ -1,5 +1,5 @@
 # Runs the same checks as `pnpm typecheck`, `pnpm lint` and `pnpm test` on every push and pull
-# request. (The scheduled data job and the deploy come in module 7.)
+# request, plus the end-to-end tests (`pnpm e2e`). The data job and the deploy are in deploy.yml.
 name: CI
 
 on:
@@ -23,3 +23,23 @@ jobs:
       - run: pnpm exec prettier --check .
       - run: pnpm test
       - run: pnpm --filter @sat-viewer/web build
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/

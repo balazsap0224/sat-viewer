@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-12T11:48:42.528Z",
+  "sources": {
+    "gp": {
+      "fetchedAt": "2026-10-12T11:48:42.528Z",
+      "url": "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=JSON",
+      "records": 16700
+    },
+    "satcat": {
+      "fetchedAt": "2026-10-12T11:48:42.528Z",
+      "url": "https://celestrak.org/satcat/records.php?GROUP=active&FORMAT=JSON",
+      "records": 17210
+    },
+    "gcat": {
+      "fetchedAt": "2026-10-11T11:51:30.449Z",
+      "url": "https://planet4589.org/space/gcat/tsv/cat/satcat.tsv",
+      "records": 69999
+    }
+  },
+  "counts": {
+    "objects": 13,
+    "withGcat": 13,
+    "debris": 3
+  },
+  "skipped": [],
+  "unknownCodes": {
+    "owners": [],
+    "launchSites": []
+  }
+}

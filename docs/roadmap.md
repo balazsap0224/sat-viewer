@@ -25,4 +25,4 @@ Status: ✅ done and verified · 🔎 built, waiting for owner verification · �
 
 | #   | Module               | Status |
 | --- | -------------------- | ------ |
-| 7   | Schedule and hosting | ⬜     |
+| 7   | Schedule and hosting | 🔎     |
