@@ -36,11 +36,15 @@ textures, or loading the night side later, would cut it; owner's choice, not don
 
 ### Owner checks after the first deploy
 
-| Check                                                                                      | ✓   |
-| ------------------------------------------------------------------------------------------ | --- |
-| The first "Data and deploy" run is green and the site opens at https://satviewer.pages.dev |     |
-| The ISS on the live site matches a tracker (e.g. wheretheiss.at)                           |     |
-| About page: fetch times are from that run                                                  |     |
-| After the next scheduled run (≤ 6 h), the About page's orbit fetch time has moved on       |     |
-| Web Analytics enabled in Cloudflare                                                        |     |
-| The CelesTrak usage policy has been read (SPEC.md 15)                                      |     |
+| Check                                                                                          | ✓              |
+| ---------------------------------------------------------------------------------------------- | -------------- |
+| The first "Data and deploy" run is green and the site opens at https://satviewer-8hx.pages.dev | ✓ (2026-10-12) |
+| The ISS on the live site matches a tracker (e.g. wheretheiss.at)                               |                |
+| About page: fetch times are from that run                                                      |                |
+| After the 00:17 UTC run on 13 October, the About page's orbit fetch time has moved on (\*)     |                |
+| Web Analytics enabled in Cloudflare                                                            |                |
+| The CelesTrak usage policy has been read (SPEC.md 15)                                          |                |
+
+(\*) The first run (a push, 15:24 UTC) was off the 6-hour beat. Orbit data is fetched again only once
+the cached copy is 5.5 hours old (`sources.ts`), so the 18:17 run kept the 15:24 data; that is
+correct. From 00:17 on, every scheduled run fetches fresh orbits.

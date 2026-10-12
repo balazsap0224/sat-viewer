@@ -317,6 +317,6 @@ Decided by the owner on 2026-10-11:
 Decided by the owner on 2026-10-12 (module 7):
 
 - GitHub repository: **private** (Actions minutes are enough; no 60-day schedule shutdown).
-- Address: **satviewer.pages.dev** (or the nearest free Cloudflare project name); a custom domain may come later.
+- Address: **satviewer-8hx.pages.dev** (`satviewer.pages.dev` was already taken, so Cloudflare added a suffix); a custom domain may come later.
 - Cloudflare Web Analytics: **on** (cookieless).
 - Donation link: **none in v1**; added later when the owner has an account.

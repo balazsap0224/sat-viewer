@@ -47,8 +47,10 @@ The token never goes into the repository, a chat or a file (SPEC.md 10).
 
 1. Repository → **Actions** → **Data and deploy** → **Run workflow** (or wait for the push
    to start it).
-2. When it is green, the site is at **https://satviewer.pages.dev** (if that name was taken,
-   Cloudflare adds a suffix; the run's last step prints the address).
+2. When it is green, the site is at **https://satviewer-8hx.pages.dev**. (`satviewer.pages.dev`
+   belongs to someone else, so Cloudflare added the `-8hx` suffix.) The run's last step prints
+   an address like `https://bb6fc5f5.satviewer-8hx.pages.dev`: that is the link to that one
+   deploy, which never changes; the address without the first part always shows the newest.
 
 ## 6. Web Analytics (after the first deploy)
 
