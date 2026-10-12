@@ -189,7 +189,8 @@ export function SelectedSat({ satrec, meanMotion, name, color }: SelectedSatProp
         <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthWrite={false} />
       </mesh>
       <group ref={label}>
-        <Html style={{ pointerEvents: 'none' }} zIndexRange={[5, 0]}>
+        {/* z-index 1: above the globe, below the panels (z-index 2), never over a card. */}
+        <Html style={{ pointerEvents: 'none' }} zIndexRange={[1, 0]}>
           <div ref={labelDiv} className="sat-label">
             {name}
           </div>

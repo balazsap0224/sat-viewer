@@ -27,6 +27,12 @@ No orbit-math reference values in this module. The owner checks the site on thei
 Found by the tests and fixed: the legend was hidden on phones by an older rule for narrow
 desktop windows.
 
+Found by the owner on an iPhone 15 (Safari) and fixed: the selected satellite's name label was
+drawn over the info card (desktop too). Labels now sit beneath the panels (`zIndexRange` 1, the
+panels are 2). The owner's first phone test showed the old layout: it was opened at the
+per-deploy address `bb6fc5f5.satviewer-8hx.pages.dev`, which always shows the first deploy;
+the site is `satviewer-8hx.pages.dev` (docs/hosting.md).
+
 ### Owner checks on a real phone
 
 | Check                                                                                       | ✓   |
