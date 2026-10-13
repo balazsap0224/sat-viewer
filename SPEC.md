@@ -99,6 +99,7 @@ Owner codes (`US`, `PRC`, `CIS`, `ESA`, `ITSO`…) are translated to readable na
 ### 4.3 Refresh policy
 
 - Orbits every **6 hours** (owner, 2026-10-11); **[PROPOSED]** SATCAT once a day; GCAT once a week. The positions on screen stay correct between refreshes because SGP4 computes them from the elements (section 6.1). The refresh only keeps the elements fresh.
+- Only the schedule (and a run started by hand) fetches. A code push redeploys with the cached downloads, so it never shifts the 6-hour beat. A source is skipped while its cached copy is younger than its refresh interval minus 3 hours, so a scheduled run that GitHub starts late does not make the next one skip.
 - GitHub disables scheduled workflows in a public repo after 60 days without commits. The About page shows the data age, and the job's failure email tells the owner; re-enable the workflow if that happens.
 - Every request sends a `User-Agent` naming the project and a contact address.
 - The job keeps the last good files. On any HTTP error it **stops, keeps the old data, and fails the workflow run** (so the owner gets an email). It never retries in a loop.

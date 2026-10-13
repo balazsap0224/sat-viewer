@@ -4,8 +4,9 @@
 #   1. restore the download cache (.data-cache) and the last good data files from the previous
 #      run (GitHub's Actions cache), so the polite-fetch rules see what was fetched when;
 #   2. run the tests, then the data job. The job asks each source at most once, and only when
-#      its cached copy is older than the source's refresh interval (packages/data-job/src/
-#      sources.ts), so a push shortly after a scheduled run downloads nothing;
+#      its cached copy is older than the source's minimum age (packages/data-job/src/
+#      sources.ts). A run started by a push downloads nothing (DATA_CACHED_ONLY): it rebuilds
+#      from the cached downloads, so pushes never shift the 6-hour fetch beat;
 #   3. on success, save the cache for the next run, build the site and upload it to
 #      Cloudflare Pages.
 # Any HTTP error or failed sanity check stops the run before the deploy: the live site keeps
@@ -63,6 +64,9 @@ jobs:
       - run: pnpm test
 
       - name: Data job (CelesTrak, GCAT; closest meetings)
+        env:
+          # Pushes reuse the cached downloads; the schedule and "Run workflow" fetch.
+          DATA_CACHED_ONLY: ${{ github.event_name == 'push' }}
         run: pnpm data
 
       - name: Save the download cache and the data for the next run

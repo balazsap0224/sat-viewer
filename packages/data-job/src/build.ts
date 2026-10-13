@@ -28,7 +28,7 @@ import { computeEncounters } from './encounters';
 import { fetchAll } from './fetchAll';
 import { gcatIndex, parseGcatOrgs, parseGcatSatcat } from './gcat';
 import { dropUnpropagatable, merge, mergeDebris } from './merge';
-import { type FetchLike, fetchSource, writeAtomic } from './politeFetch';
+import { type FetchLike, type FetchOptions, fetchSource, writeAtomic } from './politeFetch';
 import { debrisSource, SOURCES } from './sources';
 
 export interface BuildPaths {
@@ -72,6 +72,7 @@ export async function build(
   now: Date,
   fetchImpl: FetchLike,
   log: (line: string) => void = console.log,
+  fetchOptions: FetchOptions = {},
 ): Promise<MetaFile> {
   const content = async <T>(schema: z.ZodType<T>, file: string) =>
     parseWith(schema, await readFile(join(paths.contentDir, file), 'utf8'), `content/${file}`);
@@ -80,12 +81,12 @@ export async function build(
   const constellations = await content(constellationsSchema, 'constellations.json');
   const debrisClouds = await content(debrisCloudsSchema, 'debris-clouds.json');
 
-  const fetched = await fetchAll(paths.cacheDir, now, fetchImpl, log);
+  const fetched = await fetchAll(paths.cacheDir, now, fetchImpl, log, fetchOptions);
   // One GP group per debris cloud, after the main sources (the first failure stops the run).
   const debrisFetched = [];
   for (const cloud of debrisClouds) {
     const source = debrisSource(cloud.group);
-    const result = await fetchSource(source, paths.cacheDir, now, fetchImpl);
+    const result = await fetchSource(source, paths.cacheDir, now, fetchImpl, fetchOptions);
     log(`debris ${cloud.id}: ${result.how} (${(result.body.length / 1e6).toFixed(2)} MB)`);
     debrisFetched.push({
       cloud,

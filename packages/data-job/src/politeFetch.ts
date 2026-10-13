@@ -1,6 +1,8 @@
 // Polite downloading (SPEC.md 4.3, CLAUDE.md rule 8).
 //
 // - Each source has a minimum age: while the cached copy is younger, no request is made.
+// - With `cachedOnly` (runs started by a code push), any cached copy is used however old, so
+//   pushes never move the 6-hour fetch beat; only a missing copy is downloaded.
 // - When it is older, one request is made, with If-None-Match / If-Modified-Since, so an
 //   unchanged file costs the server a 304 and no body.
 // - Every request names the project and a contact address in the User-Agent.
@@ -66,11 +68,17 @@ export async function writeAtomic(path: string, content: string): Promise<void> 
   await rename(`${path}.tmp`, path);
 }
 
+export interface FetchOptions {
+  /** Use any cached copy, however old; download only when there is none */
+  readonly cachedOnly?: boolean;
+}
+
 export async function fetchSource(
   source: Source,
   cacheDir: string,
   now: Date,
   fetchImpl: FetchLike,
+  options: FetchOptions = {},
 ): Promise<Fetched> {
   await mkdir(cacheDir, { recursive: true });
   const bodyPath = join(cacheDir, source.name);
@@ -85,7 +93,9 @@ export async function fetchSource(
 
   if (meta && cached !== undefined) {
     const age = now.getTime() - Date.parse(meta.fetchedAt);
-    if (age < source.minAgeMs) return { body: cached, fetchedAt: meta.fetchedAt, how: 'cache' };
+    if (options.cachedOnly || age < source.minAgeMs) {
+      return { body: cached, fetchedAt: meta.fetchedAt, how: 'cache' };
+    }
   }
 
   const headers: Record<string, string> = { 'User-Agent': USER_AGENT };

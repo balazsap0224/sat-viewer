@@ -2,7 +2,8 @@
 
 The site is static files on **Cloudflare Pages** (SPEC.md 3). A GitHub Actions workflow
 (`.github/workflows/deploy.yml`) runs the data job every 6 hours, builds the site and uploads
-it to Cloudflare. It needs two secrets from the owner's Cloudflare account. Nothing else is
+it to Cloudflare. A push to `main` redeploys too, but with the downloads cached by the last run:
+only the schedule and **Run workflow** fetch new data. It needs two secrets from the owner's Cloudflare account. Nothing else is
 set up by hand: the workflow creates the Pages project `satviewer` on its first run.
 
 Repository: https://github.com/balazsap0224/sat-viewer (private).

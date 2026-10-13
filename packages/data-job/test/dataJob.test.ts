@@ -264,6 +264,30 @@ describe('polite fetching (SPEC.md 4.3)', () => {
     expect(s.requests).toHaveLength(1);
   });
 
+  it('cachedOnly (push runs): uses a cached copy however old, without a request', async () => {
+    const s = fakeServer([{ status: 200, body: '[1]' }]);
+    await fetchSource(source, dir, t0, s.impl);
+    const again = await fetchSource(source, dir, later(30 * 86_400_000), s.impl, {
+      cachedOnly: true,
+    });
+    expect(again).toMatchObject({ body: '[1]', how: 'cache', fetchedAt: t0.toISOString() });
+    expect(s.requests).toHaveLength(1);
+  });
+
+  it('cachedOnly with nothing cached still downloads (first run, or the cache was evicted)', async () => {
+    const s = fakeServer([{ status: 200, body: '[1]' }]);
+    const first = await fetchSource(source, dir, t0, s.impl, { cachedOnly: true });
+    expect(first).toMatchObject({ body: '[1]', how: 'downloaded' });
+    expect(s.requests).toHaveLength(1);
+  });
+
+  it("orbit minimum age: at least CelesTrak's 2 h, and a run 3 h late never makes the next skip", () => {
+    const hour = 3_600_000;
+    expect(SOURCES.gp.minAgeMs).toBeGreaterThanOrEqual(2 * hour);
+    // Run k starts 3 h late and fetches; run k + 1, on time, is 3 h later and must fetch too.
+    expect(SOURCES.gp.minAgeMs).toBeLessThanOrEqual(6 * hour - 3 * hour);
+  });
+
   it('asks with If-None-Match when stale, and keeps the cached body on 304', async () => {
     const s = fakeServer([{ status: 200, body: '[1]', etag: '"abc"' }, { status: 304 }]);
     await fetchSource(source, dir, t0, s.impl);

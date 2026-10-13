@@ -11,6 +11,8 @@ data refreshes. Setup steps: `docs/hosting.md`.
   to `main`, and by hand. Tests → data job → save cache → build → upload to Cloudflare Pages.
   Download cache and last good data carry over between runs; runs never overlap; any error
   stops the run before the deploy (the live site keeps its old data, GitHub emails the owner).
+  A run started by a push fetches nothing: it rebuilds from the cached downloads
+  (`DATA_CACHED_ONLY`, changed 2026-10-13, see (\*) below).
 - `.github/workflows/ci.yml`: adds the end-to-end tests.
 - `e2e/site.spec.ts` (`pnpm e2e`): the site loads (13 objects), "iss" → ISS (ZARYA) → info
   card shows 20 November 1998 and Baikonur, `#sat=48274` opens Tiangong, the About page
@@ -50,10 +52,23 @@ They are now marked during render, before drei uploads them (`Earth.tsx`, `Sharp
 | The first "Data and deploy" run is green and the site opens at https://satviewer-8hx.pages.dev | ✓ (2026-10-12) |
 | The ISS on the live site matches a tracker (e.g. wheretheiss.at)                               | ✓ (2026-10-12) |
 | About page: fetch times are from that run                                                      | ✓ (2026-10-12) |
-| After the 00:17 UTC run on 13 October, the About page's orbit fetch time has moved on (\*)     |                |
+| After the 00:17 UTC run on 13 October, the About page's orbit fetch time has moved on (\*)     | ✗ (2026-10-13) |
+| After the first scheduled run with the fix, the About page's orbit fetch time is from that run |                |
 | Web Analytics enabled in Cloudflare                                                            | ✓ (2026-10-12) |
 | The CelesTrak usage policy has been read (SPEC.md 15)                                          | ✓ (2026-10-12) |
 
-(\*) The first run (a push, 15:24 UTC) was off the 6-hour beat. Orbit data is fetched again only once
-the cached copy is 5.5 hours old (`sources.ts`), so the 18:17 run kept the 15:24 data; that is
-correct. From 00:17 on, every scheduled run fetches fresh orbits.
+(\*) **Not met** (Claude, 2026-10-13 10:20 UTC, from `/data/meta.json` on the live site): the 00:17
+run deployed at 00:48 UTC but kept the orbits fetched at 20:55 UTC on 12 October. That fetch came
+from the run started by the 20:53 push, which restarted the 5.5-hour clock, so at 00:48 the copy
+was only 3.9 h old. The earlier note here ("from 00:17 on, every scheduled run fetches fresh
+orbits") overlooked pushes, and also that GitHub starts scheduled runs late: the 00:17 run
+reached the data job at 00:48, and with a 5.5-hour minimum a late run makes the next, punctual
+one skip. Fixed:
+
+- runs started by a push fetch nothing and rebuild from the cached downloads (a source with no
+  cached copy at all is still downloaded);
+- each source's minimum age is its refresh interval minus 3 h: orbits 3 h, SATCAT 21 h, GCAT
+  7 days less 3 h. CelesTrak updates every 2 h, so 3 h never asks for unchanged data.
+
+Also seen: nothing has deployed since 00:48, so the 06:17 run failed or never started. Claude
+cannot see the Actions page; the owner checks it (the run's red step and its last lines).
