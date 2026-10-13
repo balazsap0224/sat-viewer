@@ -35,12 +35,14 @@ the site is `satviewer-8hx.pages.dev` (docs/hosting.md).
 
 ### Owner checks on a real phone
 
-| Check                                                                                       | ✓   |
-| ------------------------------------------------------------------------------------------- | --- |
-| Upright: the globe is visible and can be turned and pinch-zoomed; nothing overlaps          |     |
-| Search "iss", choose it: the info card opens; Follow folds it and the ISS stays in view     |     |
-| Each tab opens its sheet, the globe stays visible above it; the same tab closes it          |     |
-| Tapping a satellite on the globe selects it without many misses                             |     |
-| Sideways: panels on the left, time bar bottom right, nothing cut off                        |     |
-| Visible / Passes with "Use my location" works on the phone (needs the browser's permission) |     |
-| The address and tool bars of the phone's browser do not hide the tabs or the time bar       |     |
+All confirmed by the owner on 2026-10-13 ("phone verified").
+
+| Check                                                                                       | ✓              |
+| ------------------------------------------------------------------------------------------- | -------------- |
+| Upright: the globe is visible and can be turned and pinch-zoomed; nothing overlaps          | ✓ (2026-10-13) |
+| Search "iss", choose it: the info card opens; Follow folds it and the ISS stays in view     | ✓ (2026-10-13) |
+| Each tab opens its sheet, the globe stays visible above it; the same tab closes it          | ✓ (2026-10-13) |
+| Tapping a satellite on the globe selects it without many misses                             | ✓ (2026-10-13) |
+| Sideways: panels on the left, time bar bottom right, nothing cut off                        | ✓ (2026-10-13) |
+| Visible / Passes with "Use my location" works on the phone (needs the browser's permission) | ✓ (2026-10-13) |
+| The address and tool bars of the phone's browser do not hide the tabs or the time bar       | ✓ (2026-10-13) |

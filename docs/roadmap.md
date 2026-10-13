@@ -31,4 +31,4 @@ Status: ✅ done and verified · 🔎 built, waiting for owner verification · �
 
 | #   | Module       | Status |
 | --- | ------------ | ------ |
-| 8   | Phone layout | 🔎     |
+| 8   | Phone layout | ✅     |
