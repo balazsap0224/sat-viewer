@@ -4,9 +4,10 @@
 // Everything here is computed with SGP4 on the main thread for this one object, so it is
 // exact rather than interpolated (packages/core: track.ts, footprint.ts).
 //
-// Frames: the orbit line is drawn in the inertial scene (TEME), where an orbit is a fixed
-// loop. The ground track and the footprint belong to the ground, so they are drawn inside a
-// group turned by GMST, like the Earth (Earth.tsx); in that group the scene axes are ECEF.
+// Frames: the orbit line (half an orbit behind the satellite, half ahead) is drawn in the
+// inertial scene (TEME), where an orbit is a fixed loop. The ground track and the footprint
+// belong to the ground, so they are drawn inside a group turned by GMST, like the Earth
+// (Earth.tsx); in that group the scene axes are ECEF.
 
 import { Html } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';

@@ -4,7 +4,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { centralAngle, footprintHalfAngle, smallCircle } from '../src/footprint';
-import { type MeanElements, satrecFromElements } from '../src/sgp4';
+import { type MeanElements, propagateAt, satrecFromElements } from '../src/sgp4';
 import { epochToUnixMs, degToRad, radToDeg } from '../src/time';
 import { groundTrack, MAX_TRACK_SPAN_MIN, orbitPath, trackSpanMinutes } from '../src/track';
 import { norm, sub } from '../src/vector';
@@ -78,6 +78,16 @@ describe('orbit line and ground track (ISS)', () => {
     // node moves 0.32° west per orbit, about 38 km) and the Kozai/anomalistic period
     // difference separate the ends.
     expect(norm(sub(path[0]!, path.at(-1)!))).toBeLessThan(60);
+  });
+
+  it('the orbit line is centred on the satellite, so the gap between its ends is on the far side', () => {
+    const path = orbitPath(issSatrec, ISS.MEAN_MOTION, issEpoch, 360);
+    const now = propagateAt(issSatrec, issEpoch);
+    if (!now.ok) throw new Error('SGP4 failed');
+    expect(norm(sub(path[180]!, now.r))).toBeLessThan(1e-6);
+    // Half an orbit away: across the Earth, about 2 × 6,800 km from the satellite.
+    expect(norm(sub(path[0]!, now.r))).toBeGreaterThan(13_000);
+    expect(norm(sub(path[360]!, now.r))).toBeGreaterThan(13_000);
   });
 
   it('[5.5] ground track reaches geodetic latitude 51.79° (inclination 51.63° is geocentric)', () => {
