@@ -1,5 +1,6 @@
 // One run of the data job (SPEC.md 4.3): fetch (politely) → validate → merge → check → write,
-// then the close approaches between the published objects (encounters.ts).
+// then the statistics by year (stats.ts) and the close approaches between the published
+// objects (encounters.ts).
 //
 // Any error throws before anything is written, so the previous files stay in place. The
 // three output files are written via temporary files and renamed one by one.
@@ -21,15 +22,18 @@ import {
   ommRecordSchema,
   ownersSchema,
   satcatRecordSchema,
+  statGroupsSchema,
+  statsFileSchema,
 } from '@sat-viewer/shared';
 import { z } from 'zod';
 import { checkCount, checkEpochs } from './checks';
 import { computeEncounters } from './encounters';
 import { fetchAll } from './fetchAll';
-import { gcatIndex, parseGcatOrgs, parseGcatSatcat } from './gcat';
+import { gcatIndex, parseGcatOrgs, parseGcatSatcat, parseGcatStateCodes } from './gcat';
 import { dropUnpropagatable, merge, mergeDebris } from './merge';
 import { type FetchLike, type FetchOptions, fetchSource, writeAtomic } from './politeFetch';
 import { debrisSource, SOURCES } from './sources';
+import { computeStats } from './stats';
 
 export interface BuildPaths {
   readonly cacheDir: string;
@@ -80,6 +84,7 @@ export async function build(
   const launchSites = await content(launchSitesSchema, 'launch-sites.json');
   const constellations = await content(constellationsSchema, 'constellations.json');
   const debrisClouds = await content(debrisCloudsSchema, 'debris-clouds.json');
+  const statGroups = await content(statGroupsSchema, 'stat-groups.json');
 
   const fetched = await fetchAll(paths.cacheDir, now, fetchImpl, log, fetchOptions);
   // One GP group per debris cloud, after the main sources (the first failure stops the run).
@@ -98,7 +103,11 @@ export async function build(
 
   const gp = parseWith(z.array(ommRecordSchema), fetched.gp.body, 'CelesTrak GP');
   const satcat = parseWith(z.array(satcatRecordSchema), fetched.satcat.body, 'CelesTrak SATCAT');
-  const gcatObjects = parseGcatSatcat(fetched.gcat.body);
+  // The main catalog and the one for 6-digit numbers have the same columns.
+  const gcatObjects = [
+    ...parseGcatSatcat(fetched.gcat.body),
+    ...parseGcatSatcat(fetched.gcat100k.body),
+  ];
   const gcatOrgs = parseGcatOrgs(fetched.gcatOrgs.body);
 
   const merged = dropUnpropagatable(
@@ -129,6 +138,8 @@ export async function build(
     merged.rows.map((r) => r[1]),
     now,
   );
+  // GCAT only grows; a much shorter file is a broken download, and would distort the statistics.
+  checkCount(gcatObjects.length, previous?.sources.gcat.records, 'GCAT row count');
 
   const elements: ElementsFile = elementsFileSchema.parse({
     version: DATA_FORMAT_VERSION,
@@ -140,6 +151,15 @@ export async function build(
     version: DATA_FORMAT_VERSION,
     entries: merged.entries,
   });
+  const stats = statsFileSchema.parse(
+    computeStats(
+      gcatObjects,
+      statGroups,
+      parseGcatStateCodes(fetched.gcatOrgs.body),
+      now.getUTCFullYear(),
+      fetched.gcat.fetchedAt,
+    ),
+  );
   const meta: MetaFile = metaFileSchema.parse({
     version: DATA_FORMAT_VERSION,
     generatedAt: now.toISOString(),
@@ -169,6 +189,7 @@ export async function build(
   // Compact JSON (no indentation): the host compresses it (SPEC.md 10).
   await writeAtomic(join(paths.outDir, 'elements.json'), JSON.stringify(elements));
   await writeAtomic(join(paths.outDir, 'catalog.json'), JSON.stringify(catalog));
+  await writeAtomic(join(paths.outDir, 'stats.json'), JSON.stringify(stats));
   // meta.json last: it is what the next run compares against.
   await writeAtomic(join(paths.outDir, 'meta.json'), JSON.stringify(meta, null, 2));
   // Close approaches from the new elements (a few minutes; no network).

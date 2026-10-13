@@ -17,15 +17,24 @@ import {
   ommRecordSchema,
   ownersSchema,
   satcatRecordSchema,
+  statGroupsSchema,
+  statsFileSchema,
 } from '@sat-viewer/shared';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { build, parseWith } from '../src/build';
 import { checkCount, checkEpochs, SanityError } from '../src/checks';
-import { gcatIndex, parseGcatOrgs, parseGcatSatcat } from '../src/gcat';
+import {
+  gcatEndYear,
+  gcatIndex,
+  parseGcatOrgs,
+  parseGcatSatcat,
+  parseGcatStateCodes,
+} from '../src/gcat';
 import { dropUnpropagatable, merge, mergeDebris } from '../src/merge';
 import { type FetchLike, fetchSource, SourceError, USER_AGENT } from '../src/politeFetch';
 import { SOURCES } from '../src/sources';
+import { computeStats } from '../src/stats';
 
 const here = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 const fixture = (name: string) => readFile(here(`fixtures/${name}`), 'utf8');
@@ -223,6 +232,98 @@ describe('sanity checks (SPEC.md 4.3)', () => {
   });
 });
 
+// Module 9 reference values: PENDING OWNER VERIFICATION, see docs/verification/phase-5.md.
+describe('statistics (module 9: the owner checks these values)', () => {
+  async function early() {
+    const groups = statGroupsSchema.parse(
+      JSON.parse(await readFile(join(contentDir, 'stat-groups.json'), 'utf8')),
+    );
+    // Every object GCAT lists as launched in 1957 or 1958 (real rows, GCAT of 9 October 2026).
+    const objects = parseGcatSatcat(await fixture('gcat-1957-1958.tsv'));
+    return computeStats(objects, groups, new Map(), 2026, '2026-10-11T11:51:30.449Z');
+  }
+  const group = (s: Awaited<ReturnType<typeof early>>, id: string, year: number) =>
+    s.payloads.find((p) => p.id === id)?.counts[s.years.indexOf(year)];
+
+  it('[9.1] 1957: 2 launches (Sputnik 1 and 2), 2 Soviet payloads, both still in orbit at the end of the year', async () => {
+    const s = await early();
+    const i = s.years.indexOf(1957);
+    expect(i).toBe(0);
+    expect(s.launches[i]).toBe(2);
+    expect(group(s, 'ru', 1957)).toBe(2);
+    expect(group(s, 'us', 1957)).toBe(0);
+    // Sputnik 1's rocket stage reentered on 1 December 1957, so no stage is left.
+    expect([s.inOrbit.payloads[i], s.inOrbit.stages[i], s.inOrbit.debris[i]]).toEqual([2, 0, 0]);
+  });
+
+  it('[9.2] 1958: 8 launches (Pioneer 1 and 3 included), payloads US 7 and USSR 1; in orbit at the end: 5 payloads, 1 stage, 2 parts', async () => {
+    const s = await early();
+    const i = s.years.indexOf(1958);
+    expect(s.launches[i]).toBe(8);
+    expect(group(s, 'us', 1958)).toBe(7);
+    expect(group(s, 'ru', 1958)).toBe(1);
+    // Explorer 1, Vanguard 1, Sputnik 3, Explorer 4, SCORE; Vanguard's third stage; two
+    // Vanguard parts. Sputnik 1 and 2, Explorer 3 and both Pioneers came down in 1958.
+    expect([s.inOrbit.payloads[i], s.inOrbit.stages[i], s.inOrbit.debris[i]]).toEqual([5, 1, 2]);
+  });
+
+  it('[9.3] now (2026): of the 1957–58 objects, Vanguard 1, its third stage and two parts are still up', async () => {
+    const s = await early();
+    const i = s.years.indexOf(2026);
+    expect([s.inOrbit.payloads[i], s.inOrbit.stages[i], s.inOrbit.debris[i]]).toEqual([1, 1, 2]);
+    expect(s.launches[i]).toBe(0);
+  });
+
+  it('[9.4] end of a separate life in orbit: reentry, docking, grappling; not renaming, breakup, release or loss', () => {
+    expect(gcatEndYear('1957 Dec  1 1000?', 'R')).toBe(1957);
+    expect(gcatEndYear('1958 Apr 14 0200?', 'AR')).toBe(1958);
+    expect(gcatEndYear('1966 Mar 16 2314:18', 'DK')).toBe(1966); // Gemini 8 docked with Agena
+    expect(gcatEndYear('1998 Dec  6 2347:02', 'GRP')).toBe(1998); // Zarya grappled by the Shuttle
+    expect(gcatEndYear('2026 Apr  3 1435', 'DSO')).toBe(2026); // Artemis II left for the Moon
+    expect(gcatEndYear('2001 Jul 18', 'N')).toBeUndefined(); // Early Bird renamed, still up
+    expect(gcatEndYear('1964 Nov  5 1030?', 'E')).toBeUndefined(); // broke up, goes on as debris
+    expect(gcatEndYear('2006 Jul', 'REL')).toBeUndefined();
+    expect(gcatEndYear('-', 'O')).toBeUndefined();
+  });
+
+  it('[9.5] country codes resolve through GCAT organisations: Hong Kong counts for China, the Balearic Islands for Europe', async () => {
+    const groups = statGroupsSchema.parse(
+      JSON.parse(await readFile(join(contentDir, 'stat-groups.json'), 'utf8')),
+    );
+    const states = parseGcatStateCodes('#Code\tStateCode\nHK\tCN\nESIB\tE\nCN\tCN\n');
+    const sat = {
+      kind: 'P',
+      launchTag: '2020-001',
+      launchYear: 2020,
+      separationYear: 2020,
+      endYear: undefined,
+    };
+    const s = computeStats(
+      [
+        { ...sat, state: 'HK' },
+        { ...sat, state: 'ESIB' },
+        { ...sat, state: 'TR' },
+        { ...sat, state: undefined },
+        { ...sat, kind: 'Z', state: 'CN' },
+      ],
+      groups,
+      states,
+      2020,
+      '',
+    );
+    const at = (id: string) => s.payloads.find((p) => p.id === id)?.counts.at(-1);
+    expect([at('cn'), at('eu'), at('other')]).toEqual([1, 1, 2]);
+    expect(s.launches.at(-1)).toBe(1); // the spurious (Z) object is not counted
+    expect(statsFileSchema.safeParse(s).success).toBe(true);
+  });
+
+  it('a GCAT date without a year stops the job', () => {
+    const text =
+      '#JCAT\tSatcat\tLaunch_Tag\tPiece\tType\tName\tPLName\tLDate\tSDate\tDDate\tStatus\tOwner\tState\tManufacturer\tBus\tMass\tMassFlag\nS1\t1\tX\tX\tP\tX\t-\tOct 1957\t-\t-\tO\t-\tSU\t-\t-\t-\t\n';
+    expect(() => parseGcatSatcat(text)).toThrow(/does not start with a year/);
+  });
+});
+
 describe('polite fetching (SPEC.md 4.3)', () => {
   let dir: string;
   beforeEach(async () => (dir = await mkdtemp(join(tmpdir(), 'satviewer-test-'))));
@@ -327,6 +428,7 @@ describe('polite fetching (SPEC.md 4.3)', () => {
       { status: 200, body: await fixture('gp-sample.json') },
       { status: 200, body: await fixture('satcat-sample.json') },
       { status: 200, body: await fixture('gcat-sample.tsv') },
+      { status: 200, body: await fixture('gcat100k-sample.tsv') },
       { status: 200, body: await fixture('gcat-orgs-sample.tsv') },
       // The debris clouds, in content/debris-clouds.json order
       { status: 200, body: await fixture('gp-debris-fengyun-sample.json') },
@@ -339,7 +441,8 @@ describe('polite fetching (SPEC.md 4.3)', () => {
       s.impl,
       () => {},
     );
-    expect(meta.counts).toEqual({ objects: 5, withGcat: 4, debris: 2 });
+    // 100000 (Saramago) gets its GCAT details from satcat100k.tsv.
+    expect(meta.counts).toEqual({ objects: 5, withGcat: 5, debris: 2 });
     expect(meta.sources.gp.url).toBe(SOURCES.gp.url);
     const elements = elementsFileSchema.parse(
       JSON.parse(await readFile(join(out, 'elements.json'), 'utf8')),
@@ -349,6 +452,13 @@ describe('polite fetching (SPEC.md 4.3)', () => {
     );
     expect(elements.rows).toHaveLength(7);
     expect(catalog.entries).toHaveLength(7);
+    const stats = statsFileSchema.parse(
+      JSON.parse(await readFile(join(out, 'stats.json'), 'utf8')),
+    );
+    expect(stats.years.at(-1)).toBe(2026);
+    // Saramago (Portugal), launched 30 March 2026, counts for Europe.
+    const y2026 = stats.years.indexOf(2026);
+    expect(stats.payloads.find((p) => p.id === 'eu')?.counts[y2026]).toBeGreaterThanOrEqual(1);
     // Close approaches were computed too (none under 1 km among these 7 objects).
     expect(
       encountersFileSchema.parse(JSON.parse(await readFile(join(out, 'encounters.json'), 'utf8')))

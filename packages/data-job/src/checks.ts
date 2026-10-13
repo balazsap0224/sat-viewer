@@ -20,13 +20,17 @@ export const MAX_EPOCH_AHEAD_MS = 3 * 86_400_000;
 /** Parses a CelesTrak OMM epoch ("2026-10-11T04:13:59.875680", UTC, no suffix) to Unix ms. */
 export const epochMs = (epoch: string): number => Date.parse(`${epoch}Z`);
 
-export function checkCount(count: number, previous: number | undefined): void {
-  if (count === 0) throw new SanityError('no objects at all');
+export function checkCount(
+  count: number,
+  previous: number | undefined,
+  what = 'object count',
+): void {
+  if (count === 0) throw new SanityError(`${what}: none at all`);
   if (previous === undefined || previous === 0) return;
   const change = Math.abs(count - previous) / previous;
   if (change > MAX_COUNT_CHANGE) {
     throw new SanityError(
-      `object count changed by ${(change * 100).toFixed(1)} % (${previous} → ${count}); ` +
+      `${what} changed by ${(change * 100).toFixed(1)} % (${previous} → ${count}); ` +
         `more than ${MAX_COUNT_CHANGE * 100} % looks like a broken download. ` +
         'If the change is real, delete packages/web/public/data/meta.json and run again.',
     );

@@ -32,3 +32,10 @@ Status: ✅ done and verified · 🔎 built, waiting for owner verification · �
 | #   | Module       | Status |
 | --- | ------------ | ------ |
 | 8   | Phone layout | ✅     |
+
+## Phase 5: Statistics
+
+| #   | Module          | Status |
+| --- | --------------- | ------ |
+| 9   | Statistics data | 🔎     |
+| 10  | Statistics page | ⬜     |

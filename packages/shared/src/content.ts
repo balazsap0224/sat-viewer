@@ -68,3 +68,21 @@ export const debrisCloudsSchema = z.array(
   }),
 );
 export type DebrisClouds = z.infer<typeof debrisCloudsSchema>;
+
+/**
+ * content/stat-groups.json: the country groups of the statistics (SPEC.md 4.5). A payload
+ * belongs to the first group listing its country: GCAT's State code, resolved to the country
+ * GCAT's organisation table gives for it (HK → CN, ESIB → E). Anything else is `otherLabel`.
+ */
+export const statGroupsSchema = z.object({
+  groups: z.array(
+    z.object({
+      id: z.string().regex(/^[a-z0-9-]+$/),
+      label: z.string(),
+      /** GCAT country codes (orgs.tsv StateCode) */
+      states: z.array(z.string()).min(1),
+    }),
+  ),
+  otherLabel: z.string(),
+});
+export type StatGroups = z.infer<typeof statGroupsSchema>;

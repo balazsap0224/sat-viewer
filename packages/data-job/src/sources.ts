@@ -1,4 +1,4 @@
-// The downloads of a run (SPEC.md 4): the four below, plus one GP group per debris cloud in
+// The downloads of a run (SPEC.md 4): the five below, plus one GP group per debris cloud in
 // content/debris-clouds.json. At most one request each, and only when the cached copy is older
 // than the source's minimum age (SPEC.md 4.3).
 //
@@ -34,6 +34,15 @@ export const SOURCES = {
   gcat: {
     name: 'gcat-satcat.tsv',
     url: 'https://planet4589.org/space/gcat/tsv/cat/satcat.tsv',
+    minAgeMs: 7 * 24 * HOUR - SLACK,
+  },
+  /**
+   * GCAT's catalog of objects with 6-digit catalog numbers (launched since July 2026, when the
+   * 5-digit numbers ran out): GCAT details for those objects, and the statistics. Weekly.
+   */
+  gcat100k: {
+    name: 'gcat-satcat100k.tsv',
+    url: 'https://planet4589.org/space/gcat/tsv/cat/satcat100k.tsv',
     minAgeMs: 7 * 24 * HOUR - SLACK,
   },
   /** GCAT organisation table: org code → name (for operator and manufacturer). Weekly. */

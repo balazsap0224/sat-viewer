@@ -153,3 +153,36 @@ export const encountersFileSchema = z.object({
   rows: z.array(encounterRowSchema),
 });
 export type EncountersFile = z.infer<typeof encountersFileSchema>;
+
+const yearCounts = z.array(z.number().int().nonnegative());
+
+/**
+ * Statistics by year from GCAT (SPEC.md 4.5, module 9). Every array has one value per entry
+ * of `years`.
+ */
+export const statsFileSchema = z
+  .object({
+    version: z.literal(DATA_FORMAT_VERSION),
+    /** When GCAT was downloaded (ISO 8601 UTC) */
+    gcatFetchedAt: z.string(),
+    /** 1957 to the current year, which is still running */
+    years: z.array(z.number().int()),
+    /** Orbital launches: launches that put at least one catalogued object in orbit */
+    launches: yearCounts,
+    /** Payloads launched, by country group (content/stat-groups.json, then "other") */
+    payloads: z.array(z.object({ id: z.string(), label: z.string(), counts: yearCounts })),
+    /** Objects in Earth orbit at the end of each year; for the current year, now */
+    inOrbit: z.object({ payloads: yearCounts, stages: yearCounts, debris: yearCounts }),
+  })
+  .refine(
+    (s) =>
+      [
+        s.launches,
+        ...s.payloads.map((p) => p.counts),
+        s.inOrbit.payloads,
+        s.inOrbit.stages,
+        s.inOrbit.debris,
+      ].every((a) => a.length === s.years.length),
+    { message: 'every series needs one value per year' },
+  );
+export type StatsFile = z.infer<typeof statsFileSchema>;

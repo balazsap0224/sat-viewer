@@ -3,6 +3,11 @@
 // Format (docs/data-notes.md): the first line is the header, starting with '#'; further lines
 // starting with '#' are comments (e.g. "# Updated 2026 Oct  9"). Fields are padded with
 // spaces; '-' means "no value". A '?' in the flag column after a number marks an estimate.
+// Dates are "vague dates" ("1957 Oct  4", "2024 Sep", "1958 Jan  4?"); only their year is
+// used here, and every form starts with it.
+//
+// Two files share this format: satcat.tsv (catalog numbers up to 69999) and satcat100k.tsv
+// (6-digit numbers, objects launched since July 2026).
 
 export interface GcatObject {
   /** GCAT's own id, e.g. "S25544" */
@@ -19,6 +24,26 @@ export interface GcatObject {
   readonly bus: string | undefined;
   readonly massKg: number | undefined;
   readonly massEstimated: boolean;
+
+  // For the statistics (SPEC.md 4.5)
+  /** First letter of GCAT's SatType: P payload, R rocket stage, C component, D debris, Z spurious */
+  readonly kind: string;
+  /** COSPAR designation of the launch, e.g. "1957 ALP" or "2026-160" */
+  readonly launchTag: string;
+  /** Year of launch (GCAT's own launch date, right also for objects released from the ISS) */
+  readonly launchYear: number;
+  /**
+   * Year it separated from its parent (SDate): for a fragment, when the breakup happened,
+   * which can be decades after the parent's launch
+   */
+  readonly separationYear: number | undefined;
+  /**
+   * Year the object stopped being a separate object in Earth orbit (`gcatEndYear`);
+   * undefined while it is still in orbit
+   */
+  readonly endYear: number | undefined;
+  /** Country code of the owner (GCAT State), without a trailing '?' */
+  readonly state: string | undefined;
 }
 
 export class GcatFormatError extends Error {
@@ -29,6 +54,37 @@ const value = (s: string | undefined): string | undefined => {
   const t = s?.trim();
   return t === undefined || t === '' || t === '-' ? undefined : t;
 };
+
+/** The year of a vague date, or undefined for none ('-'). Any other form is a format error. */
+function yearOf(date: string | undefined, what: string): number | undefined {
+  const d = value(date);
+  if (d === undefined) return undefined;
+  const m = /^(\d{4})/.exec(d);
+  if (!m?.[1]) throw new GcatFormatError(`GCAT ${what} "${d}" does not start with a year`);
+  return Number(m[1]);
+}
+
+/**
+ * Phase statuses after which the object is still a separate object in Earth orbit, although
+ * GCAT gives an end date: renamed or sold (N), broken up (E: it goes on as a fragment),
+ * released from what held it (REL), lost but probably still in orbit (OX). Every other status
+ * with an end date means it left: reentered, landed, deorbited, went into deep space, or
+ * docked, was grappled or attached to another object and is part of that from then on.
+ */
+const STILL_IN_ORBIT_AFTER = new Set(['N', 'E', 'REL', 'OX']);
+
+/**
+ * The year an object stopped being a separate object in Earth orbit, from the phase end date
+ * (DDate) and status of its GCAT row; undefined while it is still in orbit.
+ */
+export function gcatEndYear(
+  dDate: string | undefined,
+  status: string | undefined,
+): number | undefined {
+  const year = yearOf(dDate, 'end date (DDate)');
+  if (year === undefined) return undefined;
+  return STILL_IN_ORBIT_AFTER.has(value(status) ?? '') ? undefined : year;
+}
 
 /** Splits a GCAT TSV into header-keyed rows, checking that the columns we use exist. */
 function readTsv(text: string, required: readonly string[]): Record<string, string>[] {
@@ -58,10 +114,17 @@ export function parseGcatSatcat(text: string): GcatObject[] {
   const rows = readTsv(text, [
     'JCAT',
     'Satcat',
+    'Launch_Tag',
     'Piece',
+    'Type',
     'Name',
     'PLName',
+    'LDate',
+    'SDate',
+    'DDate',
+    'Status',
     'Owner',
+    'State',
     'Manufacturer',
     'Bus',
     'Mass',
@@ -70,6 +133,10 @@ export function parseGcatSatcat(text: string): GcatObject[] {
   return rows.map((r) => {
     const satcat = value(r.Satcat);
     const mass = value(r.Mass);
+    const launchYear = yearOf(r.LDate, 'launch date (LDate)');
+    if (launchYear === undefined) {
+      throw new GcatFormatError(`GCAT object ${value(r.JCAT) ?? '?'} has no launch date`);
+    }
     return {
       jcat: value(r.JCAT) ?? '',
       satcat: satcat !== undefined && /^\d+$/.test(satcat) ? Number(satcat) : undefined,
@@ -81,6 +148,12 @@ export function parseGcatSatcat(text: string): GcatObject[] {
       bus: value(r.Bus),
       massKg: mass !== undefined && Number.isFinite(Number(mass)) ? Number(mass) : undefined,
       massEstimated: value(r.MassFlag) === '?',
+      kind: (value(r.Type) ?? '').charAt(0),
+      launchTag: value(r.Launch_Tag) ?? '',
+      launchYear,
+      separationYear: yearOf(r.SDate, 'separation date (SDate)'),
+      endYear: gcatEndYear(r.DDate, r.Status),
+      state: value(r.State)?.replace(/\?$/, ''),
     };
   });
 }
@@ -96,6 +169,21 @@ export function parseGcatOrgs(text: string): Map<string, string> {
     if (code && name) orgs.set(code, name);
   }
   return orgs;
+}
+
+/**
+ * Parses orgs.tsv into org code → the country it belongs to (the "StateCode" column):
+ * HK → CN, ESIB (Balearic Islands) → E, CSSR → CZ. Countries map to themselves.
+ */
+export function parseGcatStateCodes(text: string): Map<string, string> {
+  const rows = readTsv(text, ['Code', 'StateCode']);
+  const states = new Map<string, string>();
+  for (const r of rows) {
+    const code = value(r.Code);
+    const state = value(r.StateCode);
+    if (code && state) states.set(code, state);
+  }
+  return states;
 }
 
 /**
