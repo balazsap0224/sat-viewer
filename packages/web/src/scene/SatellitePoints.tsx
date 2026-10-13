@@ -10,6 +10,8 @@
 // filters leave out (`mask`).
 //
 // The current bracket and mask are also handed to satField.ts, for picking on the CPU.
+// Low-orbit dots shrink as the globe gets smaller on screen (pointSize.ts); the higher orbits
+// are sparse and keep full size.
 
 import { useFrame } from '@react-three/fiber';
 import type { OrbitClass } from '@sat-viewer/core';
@@ -21,6 +23,7 @@ import type { FromWorker, Sample, ToWorker } from '../sim/protocol';
 import { type Bracket, SampleStore } from '../sim/sampleStore';
 import { simClock } from '../state/simClock';
 import { perfStats } from '../state/perfStats';
+import { globeRadiusPx, POINT_MAX_PX, pointSizePx } from './pointSize';
 import { satField } from './satField';
 
 /** Point colours per orbit class (also used by the legend) */
@@ -39,10 +42,12 @@ const vertexShader = /* glsl */ `
   attribute vec3 velB;
   attribute float okAB;
   attribute vec3 color;
+  attribute float low;   // 1 = low Earth orbit (crowded), 0 = higher
 
   uniform float u;       // 0..1 between sample A and sample B
   uniform float h;       // seconds between the samples
-  uniform float pointPx; // point size in pixels
+  uniform float pointPx;    // point size in device pixels
+  uniform float lowPointPx; // the same for low-orbit points
 
   varying vec3 vColor;
 
@@ -58,7 +63,7 @@ const vertexShader = /* glsl */ `
     gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
     // Hidden objects: put them outside the clip volume.
     if (okAB < 0.5) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
-    gl_PointSize = pointPx;
+    gl_PointSize = mix(pointPx, lowPointPx, low);
   }
 `;
 
@@ -108,6 +113,13 @@ export function SatellitePoints({ rows, classes, mask, debris }: SatellitePoints
       colors.set([c.r, c.g, c.b], 3 * i);
     });
     g.setAttribute('color', new BufferAttribute(colors, 3));
+    g.setAttribute(
+      'low',
+      new BufferAttribute(
+        Float32Array.from(classes, (cls) => (cls === 'LEO' ? 1 : 0)),
+        1,
+      ),
+    );
     return g;
   }, [classes, debris, n]);
 
@@ -117,7 +129,8 @@ export function SatellitePoints({ rows, classes, mask, debris }: SatellitePoints
         uniforms: {
           u: { value: 0 },
           h: { value: SAMPLE_STEP_S },
-          pointPx: { value: 2.5 * Math.min(window.devicePixelRatio, 2) },
+          pointPx: { value: POINT_MAX_PX * Math.min(window.devicePixelRatio, 2) },
+          lowPointPx: { value: POINT_MAX_PX * Math.min(window.devicePixelRatio, 2) },
         },
         vertexShader,
         fragmentShader,
@@ -187,7 +200,16 @@ export function SatellitePoints({ rows, classes, mask, debris }: SatellitePoints
     ok.needsUpdate = true;
   };
 
-  useFrame(() => {
+  useFrame(({ camera, size, gl }) => {
+    const globePx = globeRadiusPx(
+      camera.position.length(),
+      camera.projectionMatrix.elements[5] ?? 1,
+      size.height,
+    );
+    (material.uniforms.pointPx as { value: number }).value = POINT_MAX_PX * gl.getPixelRatio();
+    (material.uniforms.lowPointPx as { value: number }).value =
+      pointSizePx(globePx) * gl.getPixelRatio();
+
     const s = store.current;
     if (!s) return;
     const bracket = s.update(simClock.now(), simClock.getState().rate);
